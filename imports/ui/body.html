@@ -1,0 +1,25 @@
+
+<body>
+  <div id="content">
+    {{>column}}
+    {{>column}}
+    {{>editor}}    
+  </div>
+</body>
+
+
+<template name="editor">
+  <div id="editor">
+    <div class="preview-name-text">text</div>
+    <div class="preview-name">
+      <form class="name-editor"><input type="text" name="text" id="edit_name" placeholder="edit entry"/></form>
+    </div>
+    <div class="preview-name-text">link</div>
+    <div class="preview-link">
+      <form class="link-editor"><input type="text" name="text" id="edit_link" placeholder="edit link"/></form>
+    </div>
+    <div id="markdown_div">
+      <textarea id="markdown_area"></textarea>
+    </div>
+  </div>
+</template>
