@@ -1,0 +1,93 @@
+
+.CodeMirror {
+    height: 667px;
+}
+#newlist, #newtag {
+  padding:10px;
+  margin-bottom:20px;
+  border: 1px solid #ccc;
+}
+.newlist-name, .newtag-name {
+  width: 50%;
+  font-size: 1.0em;
+}
+.newlist-submit, .newtag-submit {
+  width: 25%;
+  font-size: 1.0em;
+  border: 1px solid #aaa;
+  background-color:#ff0;
+  cursor:pointer;
+}
+.newlist-tag{
+  background-color:#f00;
+  display:inline-block;
+  border: 1px solid #aaa;
+  padding: 5px;
+  margin: 5px;
+}
+.newlist-tag:hover {
+  cursor:pointer;
+}
+.newlist-tag.active {
+  background-color:#0f0;
+}
+
+
+.editorname-form, .editorlink-form {
+  display: inline-block;
+  font-size: 1.6em;
+  margin-right: 20px;
+}
+#editor-name, #editor-link {
+  padding-right: 15px;
+  font-size: 1.0em;
+}
+#editor-link {
+  width:320px;
+}
+
+
+.editor-view{
+  font-size: 1.6em;
+  background-color: #ad440c;
+  float: right;
+  padding: 2px;
+  width: 50px;
+  text-align: center;
+  color: #fff;
+}
+.editor-view:hover {
+  cursor:pointer;
+}
+.editor-view.active {
+  background-color:#0cad1e;
+}
+
+
+.preview-name-text {
+  margin-left:10px;
+}
+.preview-link input{
+  font-size:1.1em;
+  width:340px;
+}
+#markdown_div {
+  margin-top:20px;
+}
+
+
+.manager_button {
+  width:200px;
+  color:#fff;
+  margin-top:30px;
+  padding:10px;
+  border:2px solid #333;
+  display: inline-block;
+}
+.manager_button:hover{
+  cursor:pointer;
+}
+
+#remove_checked {background-color:#555;}
+#delete_all {background-color:#d00;}
+#dump_json {background-color:#0b0;}

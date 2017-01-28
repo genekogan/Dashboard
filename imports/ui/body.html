@@ -1,25 +1,102 @@
 
 <body>
+
   <div id="content">
-    {{>column}}
-    {{>column}}
-    {{>editor}}    
+    
+    <div id="navbar">
+      {{>navbar}}
+    </div>
+
+    <div class="column">
+      {{>column}}
+    </div>
+    <div class="column">
+      {{>column}}
+    </div>
+
+    <div id="console">
+      <div id="manager">
+        {{>manager}}
+      </div>
+      <div id="editor">
+        {{>editor}}    
+      </div>
+      <div id="calendar">
+        {{> calendar}}
+      </div>
+    </div>
+  
   </div>
+
 </body>
 
 
-<template name="editor">
-  <div id="editor">
-    <div class="preview-name-text">text</div>
-    <div class="preview-name">
-      <form class="name-editor"><input type="text" name="text" id="edit_name" placeholder="edit entry"/></form>
-    </div>
-    <div class="preview-name-text">link</div>
-    <div class="preview-link">
-      <form class="link-editor"><input type="text" name="text" id="edit_link" placeholder="edit link"/></form>
-    </div>
-    <div id="markdown_div">
-      <textarea id="markdown_area"></textarea>
-    </div>
-  </div>
+
+<!-- navbar -->
+<template name="navbar">    
+  <span id="showManager" class="navbutton">manage</span>
+  <span id="showCalendar" class="navbutton">calendar</span>
 </template>
+
+
+
+<!-- manager -->
+<template name="manager">
+  
+  <div id="newlist">
+
+    <form id="newlist-form">New List:  
+      <input type="text" class="newlist-name" name="text" placeholder="list name">
+      <input type="submit" class="newlist-submit" name="add list">
+    </form>
+
+    {{#each tags}}
+      <div class="newlist-tag {{#if active}}active{{/if}}" data-tagid="{{_id}}">
+        {{tag}}
+      </div>
+    {{/each}}
+
+  </div>
+
+  <div id="newtag">
+
+    <form id="newtag-form">New Tag:  
+      <input type="text" class="newtag-name" name="text" placeholder="tag name">
+      <input type="submit" class="newtag-submit" name="add tag">
+    </form>
+
+  </div>
+
+  <div class="manager_button" id="remove_checked">remove checked</div>
+  <div class="manager_button" id="dump_json">dump to json</div>
+  <div class="manager_button" id="delete_all">delete all</div>
+ 
+</template>
+
+
+
+<!-- editor -->
+<template name="editor">
+  
+  <div id="editor-note">
+
+    <form class="editorname-form">
+      <input type="text" name="text" id="editor-name" placeholder="edit entry"/>
+    </form>
+    
+    <form class="editorlink-form">link:
+      <input type="text" name="text" id="editor-link" placeholder="edit link"/>
+    </form>
+
+    <div class="editor-view {{#if editing}}active{{/if}}">
+      {{#if editing}}view{{else}}edit{{/if}}
+    </div>
+
+  </div>
+
+  <div id="markdown_div">    
+    <textarea id="markdown_area"></textarea>
+  </div>
+
+</template>
+

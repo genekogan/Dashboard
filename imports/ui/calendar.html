@@ -1,0 +1,28 @@
+
+<!-- calendar -->
+<template name="calendar">
+  
+  <div id="calendar_add">
+  
+    <form class="new-event">Add a new event:<br/>
+  	  <input type="text" class="event-name" name="text" placeholder="event name">
+    	<input type="submit" class="event-submit" name="add event">
+  	</form>
+
+  </div>
+
+  {{#each weeks}}
+    <div class="week">
+      {{#each this}}
+        <div class="day">
+          {{#if equals d 1}}
+            {{m}}.{{d}}
+          {{else}}
+            {{m}}.{{d}}
+          {{/if}}
+        </div>
+      {{/each}}
+    </div>
+  {{/each}}
+
+</template>

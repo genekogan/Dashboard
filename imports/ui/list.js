@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Lists, Tasks } from '../api/tasks.js';
-import './task.html';
+import './list.html';
 
 
 Template.task.events({
@@ -34,8 +34,11 @@ Template.task.events({
   	active = {id:this._id, islist:false};
   	var md = Tasks.findOne(this._id).markdown;
   	mde.value(md === undefined ? "" : md);
-  	document.getElementById("edit_name").value = this.text;
-  	document.getElementById("edit_link").value = this.external_link === undefined ? "" : this.external_link;
+    if (!mde.isPreviewActive()) {mde.togglePreview();}
+    $(".editor-toolbar").hide()
+    document.getElementById("editor-name").value = this.text;
+  	document.getElementById("editor-link").value = this.external_link === undefined ? "" : this.external_link;    
+    viewEditor();
   }
 });
 
@@ -65,8 +68,11 @@ Template.list.events({
   	active = {id:this.list._id, islist:true};
   	var md = Lists.findOne(this.list._id).markdown;
   	mde.value(md === undefined ? "" : md);
+    if (!mde.isPreviewActive()) {mde.togglePreview();}
+    $(".editor-toolbar").hide()
   	document.getElementById("edit_name").value = this.list.name;
   	document.getElementById("edit_link").value = this.list.external_link === undefined ? "" : this.list.external_link;
+    viewEditor();
   },
   'dblclick .todo_header'() {
   	Lists.update(this.list._id, {$set: { collapsed:!this.list.collapsed }});

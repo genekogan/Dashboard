@@ -1,0 +1,12 @@
+.week {
+  height:50px;
+  margin:5px;
+}
+.day {
+  border: 1px solid #ddd;
+  width: 95px;
+  height:100%;
+  margin:0px;
+  padding:0px;
+  display: inline-block
+}

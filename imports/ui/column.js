@@ -1,8 +1,8 @@
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import { Tasks, Lists } from '../api/tasks.js';
+import { Tasks, Lists, Tags } from '../api/tasks.js';
 
-import './task.js';
+import './list.js';
 import './column.html';
 
 
@@ -14,27 +14,41 @@ Template.column.onCreated(function bodyOnCreated() {
 
 Template.column.helpers({
   lists() {
-    var data = [];
     const instance = Template.instance();
+    var list_condition = {};
+    var archiveAt_ = undefined;
     if (instance.state.get('showArchived')) {
-      var lists = Lists.find({}, {sort:{order:1}});
-      lists.forEach(function(list) {
-        var tasks = Tasks.find({list_id: list._id, archivedAt:{$ne:undefined}}, {sort:{order:1}});
-        if (tasks.count() > 0) {
-          data.push({list: list, task_list: tasks});
-        }
-      });
-    } else {
-      var lists = Lists.find({archivedAt:undefined}, {sort:{order:1}});
-      lists.forEach(function(list) {
-        var tasks = Tasks.find({list_id: list._id, archivedAt: undefined}, {sort:{order:1}});
-        data.push({list: list, task_list: tasks})
-      });
+      // archiveAt_ = {$ne:undefined};
     }
+    var tags = [];
+    Tags.find({}, {sort:{order:1}}).forEach(function(t){if (instance.state.get(t.name)){tags.push(t.name)}});
+    if (tags.length > 0) {
+      list_condition.tags = {$in: tags};
+    }
+    var data = [];
+    var lists = Lists.find(list_condition, {sort:{order:1}});
+    lists.forEach(function(list) {
+      var tasks = Tasks.find({list_id: list._id, archivedAt:archiveAt_}, {sort:{order:1}});
+      if (tasks.count() > 0 || !instance.state.get('showArchived')) {
+        data.push({list: list, task_list: tasks})
+      }
+    });
     return data;
   },
   incompleteCount() {
     return Tasks.find({ checked: { $ne: true } }).count();
+  },
+  tags() {
+    const instance = Template.instance();
+    var data = [];
+    Tags.find({}).forEach(function(t){
+      data.push({tag:t.name, active: instance.state.get(t.name)});
+    });
+    return data;
+  },
+  showArchived(){
+    const instance = Template.instance();
+    return instance.state.get('showArchived');
   }
 });
 
@@ -53,31 +67,16 @@ Template.column.events({
     });
     target.text.value = '';
   },
-  'submit .new-list'(event) {
-    event.preventDefault();
-    const target = event.target;
-    const text = target.text.value;
-    Lists.insert({
-      name: text,
-      order: Lists.find({}).count(),
-      createdAt: new Date(),
-    });
-    target.text.value = '';
-    window.location.reload();
-  },
   'change .show-archived input'(event, instance) {
     instance.state.set('showArchived', event.target.checked);
   },
-  'click .archive-checked'(event, instance) {
-    var date = new Date();
-    Lists.find({checked: true, archivedAt: undefined}).forEach(function (list){
-      Tasks.find({list_id:list._id, archivedAt: undefined}).forEach(function (task){
-        Tasks.update(task._id, { $set: { checked: true }});
-      });
-      Lists.update(list._id, { $set: { archivedAt: date }});
-    });
-    Tasks.find({checked: true, archivedAt: undefined}).forEach(function (task){
-      Tasks.update(task._id, { $set: { archivedAt: date }});
-    });
+  'click .archived'(event, instance) {
+    instance.state.set('showArchived', !instance.state.get('showArchived'));
+  },
+  'click .tag'(event, instance) {
+    event.preventDefault();
+    const tag = $(event.target).data('tag');
+    instance.state.set(tag, !instance.state.get(tag));
   }
 });
+

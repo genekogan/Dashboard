@@ -1,27 +1,23 @@
 
+<!-- column -->
 <template name="column">  
-  <div class="todos_column">
-    {{> lists_header}}
-    {{#each lists}}
-      {{> list}}        
+
+  <div class="tags">
+    {{#each tags}}
+      <div class="tag {{#if active}}active{{/if}}" data-tag="{{tag}}">
+        {{tag}}
+      </div>
     {{/each}}
   </div>
-</template>
 
+  <div class="archived {{#if showArchived}}active{{/if}}">✔</div>
 
-<template name="lists_header">
-  <div class="todos_topbar">
-    <span class="header_title">Todo List ({{incompleteCount}})</span>
-    <label class="show-archived">
-      <input type="checkbox" />archived
-    </label>
-    <label class="archive-checked">
-      <button>archive</button>
-    </label>
-    <div class="list_new">
-      <form class="new-list">
-        <input type="text" name="text" placeholder="add new list" />
-      </form>
+  {{#each lists}}
+    <div class="list">
+      {{> list}}
     </div>
-  </div> 
+  {{/each}}
+
 </template>
+
+

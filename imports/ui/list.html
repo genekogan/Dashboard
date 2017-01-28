@@ -1,0 +1,60 @@
+
+<!-- list -->
+<template name="list">
+  
+
+
+  <div class="list_header">
+    {{#if list.markdown}}
+    <div class="button list_md">M</div>  
+    {{/if}}
+    {{#if list.external_link}}
+    <div class="button list_link"><a href="{{list.external_link}}">L</a></div>  
+    {{/if}}
+    <div class="button archive_list">✔</div>
+    <div class="button down_list">↓</div>
+    <div class="button up_list">↑</div>
+    <div class="button new">&plus;</div>
+    <span class="{{#if list.checked}}checked{{/if}}">{{list.name}}</span>
+  </div>
+  
+  <div class="list_new {{#if list.new_hidden}}hidden{{/if}}">
+    <form class="new-task">
+      <input type="text" data-id="{{formatId list._id}}" placeholder="new entry">
+    </form>
+  </div>
+  
+  <div class="todo_list">
+    {{#unless list.collapsed}}
+    <ul>
+    {{#each task_list}}
+      {{> task}}
+    {{/each}}
+    </ul>
+    {{/unless}}
+  </div>
+
+
+</template>
+
+
+
+<!-- task -->
+<template name="task">
+
+  <div class="note">    
+    <li class="{{#if checked}}checked{{/if}}">
+      {{#if markdown}}
+      <div class="button task_md">M</div>
+      {{/if}}
+      {{#if external_link}}
+      <div class="button link"><a href="{{external_link}}">L</a></div>  
+      {{/if}}      
+      <div class="button archive">✔</div>
+      <div class="button down">↓</div>
+      <div class="button up">↑</div>
+      &nbsp;<span class="text">{{text}}</span>
+    </li>
+  </div>
+
+</template>
