@@ -2,38 +2,33 @@
 <!-- list -->
 <template name="list">
   
-
-
   <div class="list_header">
     {{#if list.markdown}}
-    <div class="button list_md">M</div>  
+      <div class="button list_md">M</div>  
     {{/if}}
     {{#if list.external_link}}
-    <div class="button list_link"><a href="{{list.external_link}}">L</a></div>  
+      <div class="button list_link"><a href="{{hyperlink list.external_link}}">L</a></div>  
     {{/if}}
     <div class="button archive_list">✔</div>
     <div class="button down_list">↓</div>
     <div class="button up_list">↑</div>
     <div class="button new">&plus;</div>
-    <span class="{{#if list.checked}}checked{{/if}}">{{list.name}}</span>
+    <div class="list_name {{#if list.checked}}checked{{/if}}">{{list.name}}</div>
   </div>
   
-  <div class="list_new {{#if list.new_hidden}}hidden{{/if}}">
-    <form class="new-task">
-      <input type="text" data-id="{{formatId list._id}}" placeholder="new entry">
-    </form>
-  </div>
+  <form class="new-task {{#if list.new_hidden}}hidden{{/if}}">
+    <input type="text" name="text" data-id="{{formatId list._id}}" placeholder="new entry">
+  </form>
   
   <div class="todo_list">
     {{#unless list.collapsed}}
-    <ul>
-    {{#each task_list}}
-      {{> task}}
-    {{/each}}
-    </ul>
+      <ul>
+        {{#each task_list}}
+          {{> task}}
+        {{/each}}
+      </ul>
     {{/unless}}
   </div>
-
 
 </template>
 
@@ -44,16 +39,18 @@
 
   <div class="note">    
     <li class="{{#if checked}}checked{{/if}}">
+
       {{#if markdown}}
       <div class="button task_md">M</div>
       {{/if}}
       {{#if external_link}}
-      <div class="button link"><a href="{{external_link}}">L</a></div>  
+      <div class="button link"><a href="{{hyperlink external_link}}">L</a></div>  
       {{/if}}      
       <div class="button archive">✔</div>
       <div class="button down">↓</div>
       <div class="button up">↑</div>
-      &nbsp;<span class="text">{{text}}</span>
+      <div class="text">{{text}}</div>
+      
     </li>
   </div>
 

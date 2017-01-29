@@ -3,12 +3,23 @@ import { Lists, Tasks } from '../api/tasks.js';
 import './list.html';
 
 
+function markdownPreviewMode() {
+  if (!mde.isPreviewActive()) {
+    mde.togglePreview();
+  } else {
+    mde.togglePreview();
+    mde.togglePreview();
+  }
+  $(".editor-toolbar").hide();
+};
+
+
 Template.task.events({
   'click .toggle-checked'() {
     Tasks.update(this._id, {$set: { checked: ! this.checked }});
   },
   'click .archive'() {
-  	Tasks.update(this._id, {$set: { checked:!this.checked }});
+  	Tasks.update(this._id, {$set: { checked: ! this.checked }});
   },
   'click .down'() {
     var task_below = Tasks.findOne({list_id: this.list_id, order: {$gt: this.order}, archivedAt: undefined }, {sort: { order: 1 }});
@@ -31,11 +42,10 @@ Template.task.events({
   	console.log("double click")
   },
   'click .text'() {
-  	active = {id:this._id, islist:false};
+  	active = {id: this._id, islist: false};
   	var md = Tasks.findOne(this._id).markdown;
   	mde.value(md === undefined ? "" : md);
-    if (!mde.isPreviewActive()) {mde.togglePreview();}
-    $(".editor-toolbar").hide()
+    markdownPreviewMode();
     document.getElementById("editor-name").value = this.text;
   	document.getElementById("editor-link").value = this.external_link === undefined ? "" : this.external_link;    
     viewEditor();
@@ -45,7 +55,7 @@ Template.task.events({
 
 Template.list.events({
   'click .archive_list'() {
-    Lists.update(this.list._id, {$set: { checked:!this.list.checked }});
+    Lists.update(this.list._id, {$set: { checked : !this.list.checked }});
   },
   'click .down_list'() {
   	var list_below = Lists.findOne({order: {$gt: this.list.order}, archivedAt: undefined }, {sort: { order: 1 }});
@@ -64,14 +74,13 @@ Template.list.events({
   'click .new'() {
     Lists.update(this.list._id, {$set: { new_hidden: !this.list.new_hidden }});
   },
-  'click .todo_header'() {
-  	active = {id:this.list._id, islist:true};
+  'click .list_name'() {
+  	active = {id: this.list._id, islist: true};
   	var md = Lists.findOne(this.list._id).markdown;
   	mde.value(md === undefined ? "" : md);
-    if (!mde.isPreviewActive()) {mde.togglePreview();}
-    $(".editor-toolbar").hide()
-  	document.getElementById("edit_name").value = this.list.name;
-  	document.getElementById("edit_link").value = this.list.external_link === undefined ? "" : this.list.external_link;
+    markdownPreviewMode();
+  	document.getElementById("editor-name").value = this.list.name;
+  	document.getElementById("editor-link").value = this.list.external_link === undefined ? "" : this.list.external_link;
     viewEditor();
   },
   'dblclick .todo_header'() {

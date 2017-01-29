@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { Lists, Tasks, Tags } from '../api/tasks.js';
+import { Lists, Tasks, Tags, Events, Travels } from '../api/tasks.js';
 
 import './calendar.js';
 import './column.js';
@@ -14,6 +14,7 @@ function onLoad() {
       strikethrough: false,
       underscoresBreakWords: false,
     },
+    forceSync: true,
     status: false,
     spellChecker: false
   });
@@ -24,8 +25,8 @@ function onLoad() {
       Tasks.update(active.id, {$set: { markdown: this.mde.value() }});
     }
   });
-  viewManager();
-  // viewCalendar();
+  // viewManager();
+  viewCalendar();
 };
 
 this.viewEditor = function() {
@@ -53,6 +54,10 @@ Template.registerHelper('formatId', function(data) {
 
 Template.registerHelper('equals', function (a, b) {
   return a === b;
+});
+
+Template.registerHelper('hyperlink', function (link) {
+  return link.includes("http") ? link : "http://"+link;
 });
 
 Template.body.onCreated(function bodyOnCreated() {
@@ -126,22 +131,6 @@ Template.manager.events({
     Tags.insert({name: name, order: Tags.find({}).count(), createdAt: new Date()});
     event.target.text.value = '';    
   },
-  'submit #editname'(event) {
-    event.preventDefault();
-    if (active.islist) {
-      Lists.update(active.id, {$set: { name: event.target.text.value }});
-    } else {
-      Tasks.update(active.id, {$set: { text: event.target.text.value }});
-    }
-  },
-  'submit #editlink'(event) {
-    event.preventDefault();
-    if (active.islist) {
-      Lists.update(active.id, {$set: { external_link: event.target.text.value }});
-    } else {
-      Tasks.update(active.id, {$set: { external_link: event.target.text.value }});
-    }
-  },
   'click #delete_all'(event) {
     Tasks.find({}).forEach(function (t){
       Tasks.remove(t._id);
@@ -151,6 +140,12 @@ Template.manager.events({
     });
     Tags.find({}).forEach(function (t){
       Tags.remove(t._id);
+    });
+    Events.find({}).forEach(function (e){
+      Events.remove(e._id);
+    });
+    Travels.find({}).forEach(function (t){
+      Travels.remove(t._id);
     });
   },
   'click #dump_json'(event) {
@@ -165,7 +160,6 @@ Template.manager.events({
   },
   'click #load_json'(event) {
 
-
   },
   'click #remove_checked'(event) {     
     var date = new Date();
@@ -176,13 +170,28 @@ Template.manager.events({
       Lists.update(list._id, { $set: { archivedAt: date }});
     });
     Tasks.find({checked: true, archivedAt: undefined}).forEach(function (task){
-      console.log("archive "+task._id)
       Tasks.update(task._id, { $set: { archivedAt: date }});
     });
   }
 });
 
 Template.editor.events({
+  'submit .editorname-form'(event) {
+    event.preventDefault();
+    if (active.islist) {
+      Lists.update(active.id, {$set: { name: event.target.text.value }});
+    } else {
+      Tasks.update(active.id, {$set: { text: event.target.text.value }});
+    }
+  },
+  'submit .editorlink-form'(event) {
+    event.preventDefault();
+    if (active.islist) {
+      Lists.update(active.id, {$set: { external_link: event.target.text.value }});
+    } else {
+      Tasks.update(active.id, {$set: { external_link: event.target.text.value }});
+    }
+  },
   'click .editor-view'(event, instance) {
     if (instance.state.get('editing')) {
       $(".editor-toolbar").hide();
@@ -192,6 +201,13 @@ Template.editor.events({
       $(".editor-toolbar").show();
       if (mde.isPreviewActive()) {mde.togglePreview();}
       instance.state.set('editing', true);
+    }
+  },
+  'click .editorlink-link'(event) {
+    if (active.islist) {
+      window.open(Lists.findOne(active.id).external_link);
+    } else {
+      window.open(Tasks.findOne(active.id).external_link);
     }
   }
 });

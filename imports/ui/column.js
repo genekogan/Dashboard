@@ -18,10 +18,10 @@ Template.column.helpers({
     var list_condition = {};
     var archiveAt_ = undefined;
     if (instance.state.get('showArchived')) {
-      // archiveAt_ = {$ne:undefined};
+      archiveAt_ = {$ne:undefined};
     }
     var tags = [];
-    Tags.find({}, {sort:{order:1}}).forEach(function(t){if (instance.state.get(t.name)){tags.push(t.name)}});
+    Tags.find({}, {sort:{order:1}}).forEach(function(t){if (instance.state.get(t._id)){tags.push(t._id)}});
     if (tags.length > 0) {
       list_condition.tags = {$in: tags};
     }
@@ -29,20 +29,17 @@ Template.column.helpers({
     var lists = Lists.find(list_condition, {sort:{order:1}});
     lists.forEach(function(list) {
       var tasks = Tasks.find({list_id: list._id, archivedAt:archiveAt_}, {sort:{order:1}});
-      if (tasks.count() > 0 || !instance.state.get('showArchived')) {
+      if (tasks.count() > 0 || (!list.checked && !instance.state.get('showArchived'))) {
         data.push({list: list, task_list: tasks})
       }
     });
     return data;
   },
-  incompleteCount() {
-    return Tasks.find({ checked: { $ne: true } }).count();
-  },
   tags() {
     const instance = Template.instance();
     var data = [];
     Tags.find({}).forEach(function(t){
-      data.push({tag:t.name, active: instance.state.get(t.name)});
+      data.push({_id: t._id, tag:t.name, active: instance.state.get(t._id)});
     });
     return data;
   },
@@ -56,16 +53,10 @@ Template.column.helpers({
 Template.column.events({
   'submit .new-task'(event) {
     event.preventDefault();
-    const target = event.target;
-    const text = target.text.value;
-    const list_id = $(target.text).data('id');
-    Tasks.insert({
-      text,
-      list_id: list_id,
-      order: Tasks.find({list_id: list_id}).count(),
-      createdAt: new Date(), 
-    });
-    target.text.value = '';
+    const text = event.target.text.value;
+    const list_id = $(event.target.text).data('id');
+    Tasks.insert({text, list_id: list_id, order: Tasks.find({list_id: list_id}).count(), createdAt: new Date()});
+    event.target.text.value = '';
   },
   'change .show-archived input'(event, instance) {
     instance.state.set('showArchived', event.target.checked);

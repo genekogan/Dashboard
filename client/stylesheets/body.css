@@ -1,6 +1,6 @@
 
 .CodeMirror {
-    height: 667px;
+  height: 665px;
 }
 #newlist, #newtag {
   padding:10px;
@@ -15,12 +15,12 @@
   width: 25%;
   font-size: 1.0em;
   border: 1px solid #aaa;
-  background-color:#ff0;
+  background-color: #ff0;
   cursor:pointer;
 }
 .newlist-tag{
-  background-color:#f00;
-  display:inline-block;
+  background-color: #f00;
+  display: inline-block;
   border: 1px solid #aaa;
   padding: 5px;
   margin: 5px;
@@ -45,7 +45,10 @@
 #editor-link {
   width:320px;
 }
-
+.editorlink-link:hover{
+  cursor: pointer;
+  color: #555;
+}
 
 .editor-view{
   font-size: 1.6em;

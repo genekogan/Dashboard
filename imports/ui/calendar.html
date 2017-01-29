@@ -4,25 +4,92 @@
   
   <div id="calendar_add">
   
-    <form class="new-event">Add a new event:<br/>
-  	  <input type="text" class="event-name" name="text" placeholder="event name">
+    <form class="new-event">New event:
+  	  <input type="text" id="event-name" name="text" placeholder="event name">
+  	  <input type="text" id="event-date" name="text" placeholder="event date">
+  	  <input type="text" id="event-link" name="text" placeholder="event link">
     	<input type="submit" class="event-submit" name="add event">
+  	</form>
+
+  	<form class="new-range">New location:
+  	  <input type="text" id="range-name" name="text" placeholder="location">
+  	  <input type="text" id="range-date1" name="text" placeholder="range date">
+    	<input type="text" id="range-date2" name="text" placeholder="range date">
+    	<input type="submit" class="range-submit" name="add range">
   	</form>
 
   </div>
 
+  <style>
+  .calendar {
+  	border-bottom: 0.5px solid #888;
+  }
+  .week {
+	  height:80px;
+	  display: flex;
+	  border-left: 0.5px solid #888;
+	}
+	.day {
+	  border-top: 0.5px solid #888;
+	  border-right: 0.5px solid #888;
+	  width: 14%;
+	  height: 100%;
+	  margin: 0px;
+	  padding: 0px;
+	  display: inline-block;
+	  vertical-align: top;
+	  overflow-x:scroll;
+	}
+	.day.today {
+		background-color:#ddd;
+	}
+  .topbar{		
+		font-size: 1.0em;
+		font-weight: bold;
+		padding-top: 1px;
+  }
+  .topbar.active{
+  	background-color: #9b9;
+  }
+  .date {
+  	border-bottom: 0.5px solid #eee;  	
+  }
+  .date_content li {
+  	font-size: 0.9em;
+  	border-bottom: 0px;  	
+  }  
+  li {
+  	vertical-align: top;
+  }
+  </style>
+
+
   {{#each weeks}}
     <div class="week">
       {{#each this}}
-        <div class="day">
-          {{#if equals d 1}}
-            {{m}}.{{d}}
-          {{else}}
-            {{m}}.{{d}}
-          {{/if}}
+        <div class="day{{#if today}} today{{/if}}" data-date="{{date}}">
+         	
+         	<div class="topbar {{#if location}}active{{/if}}" data-date="{{date}}">
+						<span class="date">{{m}}.{{d}}</span>&nbsp;{{#if location}}{{location}}{{/if}}
+					</div>
+					<div class="date_content">
+						<ul>
+							{{#each events_}}
+								<li>
+									{{#if external_link}}
+										<a href="{{hyperlink external_link}}">{{name}}</a>
+									{{else}}
+										{{name}}
+									{{/if}}
+								</li>
+							{{/each}}
+						</ul>
+					</div>
+
         </div>
       {{/each}}
     </div>
   {{/each}}
+
 
 </template>
