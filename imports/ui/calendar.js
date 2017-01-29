@@ -11,8 +11,6 @@ Template.calendar.onCreated(function bodyOnCreated() {
 Template.calendar.helpers({
   weeks() {
     var data = [];
-    // const instance = Template.instance();
-    // instance.state.set('editing', false);
     var today = new Date();
     today.setHours(0,0,0,0);
     var date = new Date("1/2/2017");
@@ -24,14 +22,11 @@ Template.calendar.helpers({
         	day.today = true;
         }
         Events.find({date:new Date(date)}).forEach(function (event){
-        	if (event.external_link) {
-        		day.events_.push({name: event.name, external_link: event.external_link});
-        	} else {
-	        	day.events_.push({name: event.name});
-        	}
+        	day.events_.push(event);
         });
         Travels.find({date1 : {$lte:new Date(date)}, date2: {$gte:new Date(date)}}).forEach(function (travel) {
         	day.location = travel.name;
+        	day.color_idx = "active"+travel.color_idx;
         });
         week.push(day);
         date.setDate(date.getDate()+1);
@@ -68,7 +63,15 @@ Template.calendar.events({
     var name = $("#range-name").val();
     var date1 = new Date($("#range-date1").val().split());
     var date2 = new Date($("#range-date2").val().split());
-    Travels.insert({name: name, date1: date1, date2: date2});
-
+    Travels.insert({name: name, date1: date1, date2: date2, color_idx: Travels.find().count() % 6});
+  },
+  'click .event'(event) {
+  	active = {id: this._id, dataType: DataType.EVENT};
+  	var md = Events.findOne(this._id).markdown;
+  	mde.value(md === undefined ? "" : md);
+    markdownPreviewMode();
+  	document.getElementById("editor-name").value = this.name;
+  	document.getElementById("editor-link").value = this.external_link === undefined ? "" : this.external_link;
+    viewEditor();
   }
 });

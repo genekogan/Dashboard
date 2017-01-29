@@ -32,7 +32,6 @@
   background-color:#0f0;
 }
 
-
 .editorname-form, .editorlink-form {
   display: inline-block;
   font-size: 1.6em;
@@ -66,7 +65,6 @@
   background-color:#0cad1e;
 }
 
-
 .preview-name-text {
   margin-left:10px;
 }
@@ -77,7 +75,6 @@
 #markdown_div {
   margin-top:20px;
 }
-
 
 .manager_button {
   width:200px;
@@ -94,3 +91,78 @@
 #remove_checked {background-color:#555;}
 #delete_all {background-color:#d00;}
 #dump_json {background-color:#0b0;}
+
+
+/* modal windows, copied from http://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_modal_bottom */
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1; 
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+  -webkit-animation-name: fadeIn;
+  -webkit-animation-duration: 0.4s;
+  animation-name: fadeIn;
+  animation-duration: 0.4s
+}
+.modal-content {
+  width:720px;
+  margin: auto;
+  margin-top: 100px;
+  background-color: #fff;
+  margin-bottom: 50px;
+  font-size: 1.5em;
+  padding: 10px;
+  -webkit-animation-name: slideIn;
+  -webkit-animation-duration: 0.4s;
+  animation-name: slideIn;
+  animation-duration: 0.4s
+}
+.modal-content .close {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.modal-content .close:hover, .modal-content .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+.modal-header {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+.modal-footer {
+  height: 20px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+/* Add Animation */
+@-webkit-keyframes slideIn {
+    from {bottom: -300px; opacity: 0} 
+    to {bottom: 0; opacity: 1}
+}
+
+@keyframes slideIn {
+    from {bottom: -300px; opacity: 0}
+    to {bottom: 0; opacity: 1}
+}
+
+@-webkit-keyframes fadeIn {
+    from {opacity: 0} 
+    to {opacity: 1}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0} 
+    to {opacity: 1}
+}

@@ -91,23 +91,23 @@
 
 
 /* notes */
-ul {
+.todo_list ul {
   margin: 0;
   padding: 0;
   background: #fff;
 } 
-li {
+.note li {
   list-style: none;
   padding: 2px;
   border-bottom: #eee solid 1px;
 }
-li .text {
+.note li .text {
   margin-left: 0px;
 }
-li.checked {
+.note li.checked {
   color: #888;
 }
-li.checked .text {
+.note li.checked .text {
   text-decoration: line-through;
 }
 .button:hover, .button.link:hover a {

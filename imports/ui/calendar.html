@@ -41,55 +41,70 @@
 	  overflow-x:scroll;
 	}
 	.day.today {
-		background-color:#ddd;
+		background-color:#e5e5e5;
 	}
   .topbar{		
 		font-size: 1.0em;
 		font-weight: bold;
 		padding-top: 1px;
   }
-  .topbar.active{
-  	background-color: #9b9;
+  .event:hover {
+  	cursor: pointer;
+  	background-color: #ff0;
   }
-  .date {
-  	border-bottom: 0.5px solid #eee;  	
+  .event.markdown {
+  	border-bottom: 1px dashed #aaa;
   }
-  .date_content li {
+  .date_content ul {
+  	margin: 0;
+  	padding: 0;
+	} 
+	.date_content li {
   	font-size: 0.9em;
   	border-bottom: 0px;  	
-  }  
-  li {
+  	list-style: none;
+  	padding: 2px;
   	vertical-align: top;
+	}  
+  .date_content a {
+  	text-decoration: none;
+  	color: #777;
   }
+  .date_content a:hover {
+  	color: #00f;
+  }
+  .topbar.active0{background-color: #aff;}
+  .topbar.active1{background-color: #faa;}
+  .topbar.active2{background-color: #ffa;}
+  .topbar.active3{background-color: #aaf;}  
+  .topbar.active4{background-color: #faf;}
+  .topbar.active5{background-color: #afa;}
+  
   </style>
-
 
   {{#each weeks}}
     <div class="week">
       {{#each this}}
-        <div class="day{{#if today}} today{{/if}}" data-date="{{date}}">
-         	
-         	<div class="topbar {{#if location}}active{{/if}}" data-date="{{date}}">
-						<span class="date">{{m}}.{{d}}</span>&nbsp;{{#if location}}{{location}}{{/if}}
+        <div class="day{{#if today}} today{{/if}}" data-date="{{date}}">         	
+         	<div class="topbar {{#if location}}{{color_idx}}{{/if}}" data-date="{{date}}">
+						<span class="date">{{month date}}.{{day date}}</span>&nbsp;{{#if location}}{{location}}{{/if}}
 					</div>
 					<div class="date_content">
 						<ul>
 							{{#each events_}}
 								<li>
 									{{#if external_link}}
-										<a href="{{hyperlink external_link}}">{{name}}</a>
+										<span class="event{{#if markdown}} markdown{{/if}}">{{name}}</span> <a href="{{hyperlink external_link}}">[L]</a>
 									{{else}}
-										{{name}}
+										<span class="event{{#if markdown}} markdown{{/if}}">{{name}}</span>
 									{{/if}}
 								</li>
 							{{/each}}
 						</ul>
 					</div>
-
         </div>
       {{/each}}
     </div>
   {{/each}}
-
 
 </template>

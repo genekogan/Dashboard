@@ -8,7 +8,7 @@ import './column.html';
 
 Template.column.onCreated(function bodyOnCreated() {
   this.state = new ReactiveDict();
-  this.active = {id:-1, islist:false};
+  this.active = {id:-1, dataType:null};
 });
 
 

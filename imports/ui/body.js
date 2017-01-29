@@ -5,6 +5,7 @@ import './calendar.js';
 import './column.js';
 import './body.html';
 
+this.DataType = {NOTE:0, LIST:1, TAG:2, EVENT:3, TRAVEL:4};
 
 function onLoad() {
   this.mde = new SimpleMDE({
@@ -19,34 +20,48 @@ function onLoad() {
     spellChecker: false
   });
   this.mde.codemirror.on("change", function(){
-    if (active.islist) {
+    if (active.dataType == DataType.LIST) {
       Lists.update(active.id, {$set: { markdown: this.mde.value() }});
-    } else {
+    } else if (active.dataType == DataType.NOTE) {
       Tasks.update(active.id, {$set: { markdown: this.mde.value() }});
+    } else if (active.dataType == DataType.EVENT) {
+      Events.update(active.id, {$set: { markdown: this.mde.value() }});
     }
   });
-  // viewManager();
   viewCalendar();
+};
+
+this.markdownPreviewMode = function() {
+  if (!mde.isPreviewActive()) {
+    mde.togglePreview();
+  } else {
+    mde.togglePreview();
+    mde.togglePreview();
+  }
+  $(".editor-toolbar").hide();
 };
 
 this.viewEditor = function() {
   $("#calendar").hide();
-  $("#manager").hide();
   $("#editor").show();
-};
-
-this.viewManager = function() {
-  $("#calendar").hide();
-  $("#editor").hide();
-  $("#manager").show();
 };
 
 this.viewCalendar = function() {
   $("#editor").hide();
-  $("#manager").hide();
   $("#calendar").show();
 };
 
+this.viewAdmin = function() {
+  $("#mAdmin").css("display", "block");
+};
+
+this.viewNewTag = function() {
+  $("#mNewTag").css("display", "block");
+};
+
+this.viewNewList = function() {
+  $("#mNewList").css("display", "block");
+};
 
 Template.registerHelper('formatId', function(data) {
   return (data && data._str) || data;
@@ -58,6 +73,14 @@ Template.registerHelper('equals', function (a, b) {
 
 Template.registerHelper('hyperlink', function (link) {
   return link.includes("http") ? link : "http://"+link;
+});
+
+Template.registerHelper('month', function (date) {
+  return date.getMonth()+1;
+});
+
+Template.registerHelper('day', function (date) {
+  return date.getDate();
 });
 
 Template.body.onCreated(function bodyOnCreated() {
@@ -74,10 +97,16 @@ Template.editor.onCreated(function bodyOnCreated() {
 });
 
 Template.navbar.events({
-  'click #showManager'(event) {
-    viewManager();
+  'click #viewAdmin'(event) {
+    viewAdmin();
   },
-  'click #showCalendar'(event) {
+  'click #viewNewTag'(event) {
+    viewNewTag();
+  },
+  'click #viewNewList'(event) {
+    viewNewList();
+  },
+  'click #viewCalendar'(event) {
     viewCalendar();
   }
 });
@@ -172,24 +201,36 @@ Template.manager.events({
     Tasks.find({checked: true, archivedAt: undefined}).forEach(function (task){
       Tasks.update(task._id, { $set: { archivedAt: date }});
     });
+  },
+  'click .modal'(event) {
+    if ($(event.target).hasClass("modal")) {
+      $('.modal').css("display", "none");
+    }
+  },
+  'click .modal-header .close'(event) {
+    $('.modal').css("display", "none");
   }
 });
 
 Template.editor.events({
   'submit .editorname-form'(event) {
     event.preventDefault();
-    if (active.islist) {
+    if (active.dataType == DataType.LIST) {
       Lists.update(active.id, {$set: { name: event.target.text.value }});
-    } else {
+    } else if (active.dataType == DataType.NOTE) {
       Tasks.update(active.id, {$set: { text: event.target.text.value }});
+    } else if (active.dataType == DataType.EVENT) {
+      Events.update(active.id, {$set: { name: event.target.text.value }});
     }
   },
   'submit .editorlink-form'(event) {
     event.preventDefault();
-    if (active.islist) {
+    if (active.dataType == DataType.LIST) {
       Lists.update(active.id, {$set: { external_link: event.target.text.value }});
-    } else {
+    } else if (active.dataType == DataType.NOTE) {
       Tasks.update(active.id, {$set: { external_link: event.target.text.value }});
+    } else if (active.dataType == DataType.EVENT) {
+      Events.update(active.id, {$set: { external_link: event.target.text.value }});
     }
   },
   'click .editor-view'(event, instance) {
@@ -204,9 +245,9 @@ Template.editor.events({
     }
   },
   'click .editorlink-link'(event) {
-    if (active.islist) {
+    if (active.dataType == DataType.LIST) {
       window.open(Lists.findOne(active.id).external_link);
-    } else {
+    } else if (active.dataType == DataType.NOTE) {
       window.open(Tasks.findOne(active.id).external_link);
     }
   }

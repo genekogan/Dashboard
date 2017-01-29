@@ -15,9 +15,6 @@
     </div>
 
     <div id="console">
-      <div id="manager">
-        {{> manager}}
-      </div>
       <div id="editor">
         {{> editor}}    
       </div>
@@ -28,20 +25,87 @@
   
   </div>
 
+  <!-- manager (modal windows) -->
+  {{> manager}}
+
 </body>
 
 
 
 <!-- navbar -->
-<template name="navbar">    
-  <span id="showManager" class="navbutton">manage</span>
-  <span id="showCalendar" class="navbutton">calendar</span>
+<template name="navbar">
+  <span id="viewAdmin" class="navbutton">admin</span>
+  <span id="viewNewList" class="navbutton">new list</span>
+  <span id="viewNewTag" class="navbutton">new tag</span>
+  <span id="viewCalendar" class="navbutton">calendar</span>
 </template>
 
 
 
-<!-- manager -->
 <template name="manager">
+
+  <div id="mAdmin" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close">&times;</span>
+        <h2>Manager</h2>
+      </div>
+      <div class="manager_button" id="remove_checked">remove checked</div>
+      <div class="manager_button" id="dump_json">dump to json</div>
+      <div class="manager_button" id="delete_all">delete all</div>      
+      <p>&nbsp;</p>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+
+
+  <div id="mNewList" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close">&times;</span>
+        <h2>New list</h2>
+      </div>
+      <div id="newlist">
+        <form id="newlist-form"> 
+          <input type="text" class="newlist-name" name="text" placeholder="list name">
+          <input type="submit" class="newlist-submit" name="add list">
+        </form>
+        {{#each tags}}
+          <div class="newlist-tag {{#if active}}active{{/if}}" data-tagid="{{_id}}">
+            {{tag}}
+          </div>
+        {{/each}}
+      </div>
+      <p>&nbsp;</p>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+
+
+  <div id="mNewTag" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close">&times;</span>
+        <h2>New tag</h2>
+      </div>
+      <div id="newtag">
+        <form id="newtag-form">
+          <input type="text" class="newtag-name" name="text" placeholder="tag name">
+          <input type="submit" class="newtag-submit" name="add tag">
+        </form>
+      </div>
+      <p>&nbsp;</p>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+
+</template>
+
+
+
+
+<!-- manager -->
+<!-- <template name="manager">
   
   <div id="newlist">
 
@@ -71,7 +135,7 @@
   <div class="manager_button" id="dump_json">dump to json</div>
   <div class="manager_button" id="delete_all">delete all</div>
  
-</template>
+</template> -->
 
 
 
