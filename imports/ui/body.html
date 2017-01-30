@@ -8,10 +8,10 @@
     </div>
 
     <div class="column">
-      {{> column}}
+      {{> column idx=0}}
     </div>
     <div class="column">
-      {{> column}}
+      {{> column idx=1}}
     </div>
 
     <div id="console">
@@ -37,105 +37,9 @@
   <span id="viewAdmin" class="navbutton">admin</span>
   <span id="viewNewList" class="navbutton">new list</span>
   <span id="viewNewTag" class="navbutton">new tag</span>
+  <span id="viewNewEvent" class="navbutton">new event</span>
   <span id="viewCalendar" class="navbutton">calendar</span>
 </template>
-
-
-
-<template name="manager">
-
-  <div id="mAdmin" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <span class="close">&times;</span>
-        <h2>Manager</h2>
-      </div>
-      <div class="manager_button" id="remove_checked">remove checked</div>
-      <div class="manager_button" id="dump_json">dump to json</div>
-      <div class="manager_button" id="delete_all">delete all</div>      
-      <p>&nbsp;</p>
-      <div class="modal-footer"></div>
-    </div>
-  </div>
-
-
-  <div id="mNewList" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <span class="close">&times;</span>
-        <h2>New list</h2>
-      </div>
-      <div id="newlist">
-        <form id="newlist-form"> 
-          <input type="text" class="newlist-name" name="text" placeholder="list name">
-          <input type="submit" class="newlist-submit" name="add list">
-        </form>
-        {{#each tags}}
-          <div class="newlist-tag {{#if active}}active{{/if}}" data-tagid="{{_id}}">
-            {{tag}}
-          </div>
-        {{/each}}
-      </div>
-      <p>&nbsp;</p>
-      <div class="modal-footer"></div>
-    </div>
-  </div>
-
-
-  <div id="mNewTag" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <span class="close">&times;</span>
-        <h2>New tag</h2>
-      </div>
-      <div id="newtag">
-        <form id="newtag-form">
-          <input type="text" class="newtag-name" name="text" placeholder="tag name">
-          <input type="submit" class="newtag-submit" name="add tag">
-        </form>
-      </div>
-      <p>&nbsp;</p>
-      <div class="modal-footer"></div>
-    </div>
-  </div>
-
-</template>
-
-
-
-
-<!-- manager -->
-<!-- <template name="manager">
-  
-  <div id="newlist">
-
-    <form id="newlist-form">New List:  
-      <input type="text" class="newlist-name" name="text" placeholder="list name">
-      <input type="submit" class="newlist-submit" name="add list">
-    </form>
-
-    {{#each tags}}
-      <div class="newlist-tag {{#if active}}active{{/if}}" data-tagid="{{_id}}">
-        {{tag}}
-      </div>
-    {{/each}}
-
-  </div>
-
-  <div id="newtag">
-
-    <form id="newtag-form">New Tag:  
-      <input type="text" class="newtag-name" name="text" placeholder="tag name">
-      <input type="submit" class="newtag-submit" name="add tag">
-    </form>
-
-  </div>
-
-  <div class="manager_button" id="remove_checked">remove checked</div>
-  <div class="manager_button" id="dump_json">dump to json</div>
-  <div class="manager_button" id="delete_all">delete all</div>
- 
-</template> -->
 
 
 
@@ -164,3 +68,86 @@
 
 </template>
 
+
+
+<!-- manager: admin, new note, new list -->
+<template name="manager">
+
+  <div id="mAdmin" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close">&times;</span>
+        <h2>Admin</h2>
+      </div>
+      <div id="adminbuttons">
+        <div class="manager_button" id="remove_checked">remove checked</div>
+        <!-- <div class="manager_button" id="add_column">add column</div> -->
+        <div class="manager_button" id="dump_json">dump to json</div>
+        <div class="manager_button" id="delete_all">delete all</div> 
+        <div class="modal-footer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="mNewList" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close">&times;</span>
+        <h2>New list</h2>
+      </div>
+      <div id="newlist">
+        <form id="newlist-form"> 
+          <input type="text" id="newlist-name" name="text" placeholder="name">
+          <input type="submit" id="newlist-submit" name="add list">
+        </form>
+        {{#each tags}}
+        <div class="newlist-tag {{#if active}}active{{/if}}" data-tagid="{{_id}}">
+          {{tag}}
+        </div>
+        {{/each}}
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+
+  <div id="mNewTag" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close">&times;</span>
+        <h2>New tag</h2>
+      </div>
+      <div id="newtag">
+        <form id="newtag-form">
+          <input type="text" id="newtag-name" name="text" placeholder="tag name">
+          <input type="submit" id="newtag-submit" name="add tag">
+        </form>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+
+  <div id="mNewEvent" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close">&times;</span>
+        <h2>New event</h2>
+      </div>
+      <div id="newevent">
+        <form class="newevent-form">New event:<br/>
+          <input type="text" id="newevent-name" name="text" placeholder="name">
+          <input type="text" id="newevent-date" name="text" placeholder="date">
+          <input type="text" id="newevent-link" name="text" placeholder="link">
+          <input type="submit" id="newevent-submit" name="add event">
+        </form>
+        <form class="newrange-form">New date range:<br/>
+          <input type="text" id="newrange-name" name="text" placeholder="where">
+          <input type="text" id="newrange-date1" name="text" placeholder="from">
+          <input type="text" id="newrange-date2" name="text" placeholder="until">
+          <input type="submit" id="newrange-submit" name="add range">
+        </form>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+
+</template>

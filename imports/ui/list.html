@@ -16,15 +16,15 @@
     <div class="list_name {{#if list.checked}}checked{{/if}}">{{list.name}}</div>
   </div>
   
-  <form class="new-task {{#if list.new_hidden}}hidden{{/if}}">
+  <form class="new-note {{#if list.new_hidden}}hidden{{/if}}">
     <input type="text" name="text" data-id="{{formatId list._id}}" placeholder="new entry">
   </form>
   
   <div class="todo_list">
     {{#unless list.collapsed}}
       <ul>
-        {{#each task_list}}
-          {{> task}}
+        {{#each note_list}}
+          {{> note}}
         {{/each}}
       </ul>
     {{/unless}}
@@ -34,14 +34,14 @@
 
 
 
-<!-- task -->
-<template name="task">
+<!-- note -->
+<template name="note">
 
   <div class="note">    
     <li class="{{#if checked}}checked{{/if}}">
 
       {{#if markdown}}
-      <div class="button task_md">M</div>
+      <div class="button note_md">M</div>
       {{/if}}
       {{#if external_link}}
       <div class="button link"><a href="{{hyperlink external_link}}">L</a></div>  

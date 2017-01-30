@@ -1,7 +1,7 @@
 body {
   font-family: "Geneva";
   font-size: 12px;
-  background-color: #000;
+  background-color: #999;
   padding: 0px;
   margin: 0px;
   overflow-y: hidden;
@@ -20,8 +20,11 @@ body {
   padding-right: 5px;
 }
 .navbutton:hover {
-  background-color: #aaa;
+  background-color: #f4ad42;
   cursor: pointer;
+}
+.navbutton:active {
+  background-color: #ccc;
 }
 #console {
 	vertical-align: top;

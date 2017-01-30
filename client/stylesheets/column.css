@@ -68,7 +68,7 @@
 .list_header:hover .button, .note:hover .button{
   visibility: visible;
 }
-.list_header .button.list_md, .note .button.task_md {
+.list_header .button.list_md, .note .button.note_md {
   visibility: visible;
 }
 .list_header .button.list_link a, .note .button.link a{
@@ -76,16 +76,16 @@
   text-decoration: none;
   color:#000;
 }
-.new-task.hidden {
+.new-note.hidden {
   display: none;
 }
-.new-task input {
+.new-note input {
   background-color:#eee;
   border: 1px solid #bbb;
   width: 98%;
   font-size: 1em;
 }
-.new-task input:focus{
+.new-note input:focus{
   border: 1px dashed #555;
 }
 

@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import { Tasks, Lists, Tags } from '../api/tasks.js';
+import { Notes, Lists, Tags } from '../api/notes.js';
 
 import './list.js';
 import './column.html';
@@ -9,6 +9,12 @@ import './column.html';
 Template.column.onCreated(function bodyOnCreated() {
   this.state = new ReactiveDict();
   this.active = {id:-1, dataType:null};
+  const instance = Template.instance();
+  if (this.data.idx==0) {
+    //instance.state.set("APWbBC8BYFAgGAxGL", true);
+  } else {
+    //instance.state.set("Ni4ZwitSGeZBsD6iB", true);
+  }
 });
 
 
@@ -28,9 +34,9 @@ Template.column.helpers({
     var data = [];
     var lists = Lists.find(list_condition, {sort:{order:1}});
     lists.forEach(function(list) {
-      var tasks = Tasks.find({list_id: list._id, archivedAt:archiveAt_}, {sort:{order:1}});
-      if (tasks.count() > 0 || (!list.checked && !instance.state.get('showArchived'))) {
-        data.push({list: list, task_list: tasks})
+      var notes = Notes.find({list_id: list._id, archivedAt:archiveAt_}, {sort:{order:1}});
+      if (notes.count() > 0 || (!list.checked && !instance.state.get('showArchived'))) {
+        data.push({list: list, note_list: notes})
       }
     });
     return data;
@@ -51,11 +57,11 @@ Template.column.helpers({
 
 
 Template.column.events({
-  'submit .new-task'(event) {
+  'submit .new-note'(event) {
     event.preventDefault();
     const text = event.target.text.value;
     const list_id = $(event.target.text).data('id');
-    Tasks.insert({text, list_id: list_id, order: Tasks.find({list_id: list_id}).count(), createdAt: new Date()});
+    Notes.insert({text, list_id: list_id, order: Notes.find({list_id: list_id}).count(), createdAt: new Date()});
     event.target.text.value = '';
   },
   'change .show-archived input'(event, instance) {
@@ -67,6 +73,7 @@ Template.column.events({
   'click .tag'(event, instance) {
     event.preventDefault();
     const tag = $(event.target).data('tag');
+    console.log(tag);
     instance.state.set(tag, !instance.state.get(tag));
   }
 });

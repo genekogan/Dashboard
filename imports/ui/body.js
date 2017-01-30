@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
-import { Lists, Tasks, Tags, Events, Travels } from '../api/tasks.js';
+import { Session } from 'meteor/session';
+import { Lists, Notes, Tags, Events, Travels } from '../api/notes.js';
 
 import './calendar.js';
 import './column.js';
@@ -23,7 +24,7 @@ function onLoad() {
     if (active.dataType == DataType.LIST) {
       Lists.update(active.id, {$set: { markdown: this.mde.value() }});
     } else if (active.dataType == DataType.NOTE) {
-      Tasks.update(active.id, {$set: { markdown: this.mde.value() }});
+      Notes.update(active.id, {$set: { markdown: this.mde.value() }});
     } else if (active.dataType == DataType.EVENT) {
       Events.update(active.id, {$set: { markdown: this.mde.value() }});
     }
@@ -31,14 +32,35 @@ function onLoad() {
   viewCalendar();
 };
 
-this.markdownPreviewMode = function() {
-  if (!mde.isPreviewActive()) {
-    mde.togglePreview();
+this.setPreviewMode = function(preview) {
+  if (preview){ 
+    $(".editor-toolbar").hide();
+    if (!mde.isPreviewActive()) {
+      mde.togglePreview();
+    } else {
+      mde.togglePreview();
+      mde.togglePreview();
+    }
+    Session.set('editing', false);
   } else {
-    mde.togglePreview();
-    mde.togglePreview();
+    $(".editor-toolbar").show();
+    if (mde.isPreviewActive()) {
+      mde.togglePreview();
+    } else {
+      mde.togglePreview();
+      mde.togglePreview();
+    }
+    Session.set('editing', true);
   }
-  $(".editor-toolbar").hide();
+};
+
+this.setMarkdown = function(entry) {
+  var md = Notes.findOne(entry._id).markdown;
+  mde.value(md === undefined ? "" : md);
+  setPreviewMode(true);
+  document.getElementById("editor-name").value = entry.text;
+  document.getElementById("editor-link").value = entry.external_link === undefined ? "" : entry.external_link;    
+  viewEditor();
 };
 
 this.viewEditor = function() {
@@ -61,6 +83,18 @@ this.viewNewTag = function() {
 
 this.viewNewList = function() {
   $("#mNewList").css("display", "block");
+};
+
+this.viewNewTag = function() {
+  $("#mNewTag").css("display", "block");
+};
+
+this.viewNewEvent = function() {
+  $("#mNewEvent").css("display", "block");
+};
+
+this.hideModal = function() {
+  $('.modal').css("display", "none");
 };
 
 Template.registerHelper('formatId', function(data) {
@@ -93,6 +127,7 @@ Template.manager.onCreated(function bodyOnCreated() {
 });
 
 Template.editor.onCreated(function bodyOnCreated() {
+  Session.set('editing', false);
   this.state = new ReactiveDict();
 });
 
@@ -105,6 +140,9 @@ Template.navbar.events({
   },
   'click #viewNewList'(event) {
     viewNewList();
+  },
+  'click #viewNewEvent'(event) {
+    viewNewEvent();
   },
   'click #viewCalendar'(event) {
     viewCalendar();
@@ -122,10 +160,15 @@ Template.manager.helpers({
   }
 });
 
+Template.body.helpers({
+  columns(){
+    return Columns.find({});
+  }
+});
+
 Template.editor.helpers({
   editing(){
-    const instance = Template.instance();
-    return instance.state.get('editing');
+    return Session.get('editing');;
   }
 });
 
@@ -149,6 +192,7 @@ Template.manager.events({
     }
     Lists.insert({name: name, tags: tags, order: Lists.find({}).count(), createdAt: new Date()});
     event.target.text.value = '';
+    hideModal();
   },
   'submit #newtag-form'(event) {
     event.preventDefault();
@@ -159,29 +203,22 @@ Template.manager.events({
     }
     Tags.insert({name: name, order: Tags.find({}).count(), createdAt: new Date()});
     event.target.text.value = '';    
+    hideModal();
   },
   'click #delete_all'(event) {
-    Tasks.find({}).forEach(function (t){
-      Tasks.remove(t._id);
-    })
-    Lists.find({}).forEach(function (l){
-      Lists.remove(l._id);
-    });
-    Tags.find({}).forEach(function (t){
-      Tags.remove(t._id);
-    });
-    Events.find({}).forEach(function (e){
-      Events.remove(e._id);
-    });
-    Travels.find({}).forEach(function (t){
-      Travels.remove(t._id);
-    });
+    if (!confirm("Are you sure you want to delete?")) return;
+    if (!confirm("Really???")) return;
+    Notes.find({}).forEach(function (t){Notes.remove(t._id);})
+    Lists.find({}).forEach(function (l){Lists.remove(l._id)});
+    Tags.find({}).forEach(function (t){Tags.remove(t._id)});
+    Events.find({}).forEach(function (e){Events.remove(e._id)});
+    Travels.find({}).forEach(function (t){Travels.remove(t._id)});
   },
   'click #dump_json'(event) {
-    var json = {tags:[], lists:[], tasks:[]};
+    var json = {tags:[], lists:[], notes:[]};
     Tags.find({}).forEach(function (t){json.tags.push(t);});
     Lists.find({}).forEach(function (l){json.lists.push(l);});
-    Tasks.find({}).forEach(function (t){json.tasks.push(t);});
+    Notes.find({}).forEach(function (t){json.notes.push(t);});
     var data = JSON.stringify(json);
     var url = 'data:text/json;charset=utf8,'+encodeURIComponent(data);
     window.open(url, '_blank');
@@ -193,22 +230,54 @@ Template.manager.events({
   'click #remove_checked'(event) {     
     var date = new Date();
     Lists.find({checked: true, archivedAt: undefined}).forEach(function (list){
-      Tasks.find({list_id:list._id, archivedAt: undefined}).forEach(function (task){
-        Tasks.update(task._id, { $set: { checked: true }});
+      Notes.find({list_id:list._id, archivedAt: undefined}).forEach(function (note){
+        Notes.update(note._id, { $set: { checked: true }});
       });
       Lists.update(list._id, { $set: { archivedAt: date }});
     });
-    Tasks.find({checked: true, archivedAt: undefined}).forEach(function (task){
-      Tasks.update(task._id, { $set: { archivedAt: date }});
+    Notes.find({checked: true, archivedAt: undefined}).forEach(function (note){
+      Notes.update(note._id, { $set: { archivedAt: date }});
     });
+  },
+  'click #add_column'(event) {
+    console.log("new column");
+    Columns.insert({visible:[]});
+  },
+  'submit .newevent-form'(event) {
+    event.preventDefault();
+    var name = $("#newevent-name").val();
+    var date = new Date($("#newevent-date").val());
+    var link = $("#newevent-link").val();
+    if (link !== "") {
+      Events.insert({name: name, date: date, external_link: link});
+    } else {
+      Events.insert({name: name, date: date});
+    }
+    hideModal();
+  },
+  'submit .newrange-form'(event) {
+    event.preventDefault();
+    var name = $("#newrange-name").val();
+    var date1 = new Date($("#newrange-date1").val().split());
+    var date2 = new Date($("#newrange-date2").val().split());
+    Travels.insert({name: name, date1: date1, date2: date2, color_idx: Travels.find().count() % 6});
+    hideModal();
+  },
+  'click .event'(event) {
+    active = {id: this._id, dataType: DataType.EVENT};
+    var md = Events.findOne(this._id).markdown;
+    mde.value(md === undefined ? "" : md);
+    document.getElementById("editor-name").value = this.name;
+    document.getElementById("editor-link").value = this.external_link === undefined ? "" : this.external_link;
+    viewEditor();
   },
   'click .modal'(event) {
     if ($(event.target).hasClass("modal")) {
-      $('.modal').css("display", "none");
+      hideModal();
     }
   },
   'click .modal-header .close'(event) {
-    $('.modal').css("display", "none");
+    hideModal();
   }
 });
 
@@ -218,7 +287,7 @@ Template.editor.events({
     if (active.dataType == DataType.LIST) {
       Lists.update(active.id, {$set: { name: event.target.text.value }});
     } else if (active.dataType == DataType.NOTE) {
-      Tasks.update(active.id, {$set: { text: event.target.text.value }});
+      Notes.update(active.id, {$set: { text: event.target.text.value }});
     } else if (active.dataType == DataType.EVENT) {
       Events.update(active.id, {$set: { name: event.target.text.value }});
     }
@@ -228,27 +297,23 @@ Template.editor.events({
     if (active.dataType == DataType.LIST) {
       Lists.update(active.id, {$set: { external_link: event.target.text.value }});
     } else if (active.dataType == DataType.NOTE) {
-      Tasks.update(active.id, {$set: { external_link: event.target.text.value }});
+      Notes.update(active.id, {$set: { external_link: event.target.text.value }});
     } else if (active.dataType == DataType.EVENT) {
       Events.update(active.id, {$set: { external_link: event.target.text.value }});
     }
   },
   'click .editor-view'(event, instance) {
-    if (instance.state.get('editing')) {
-      $(".editor-toolbar").hide();
-      if (!mde.isPreviewActive()) {mde.togglePreview();}
-      instance.state.set('editing', false);
-    } else{
-      $(".editor-toolbar").show();
-      if (mde.isPreviewActive()) {mde.togglePreview();}
-      instance.state.set('editing', true);
-    }
+    if (Session.get('editing')) {
+      setPreviewMode(true);
+    } else {
+      setPreviewMode(false);
+    }    
   },
   'click .editorlink-link'(event) {
     if (active.dataType == DataType.LIST) {
       window.open(Lists.findOne(active.id).external_link);
     } else if (active.dataType == DataType.NOTE) {
-      window.open(Tasks.findOne(active.id).external_link);
+      window.open(Notes.findOne(active.id).external_link);
     }
   }
 });

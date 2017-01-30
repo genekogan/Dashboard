@@ -1,43 +1,37 @@
 import { Template } from 'meteor/templating';
-import { Lists, Tasks } from '../api/tasks.js';
+import { Lists, Notes } from '../api/notes.js';
 import './list.html';
 
 
-Template.task.events({
+Template.note.events({
   'click .toggle-checked'() {
-    Tasks.update(this._id, {$set: { checked: ! this.checked }});
+    Notes.update(this._id, {$set: { checked: ! this.checked }});
   },
   'click .archive'() {
-  	Tasks.update(this._id, {$set: { checked: ! this.checked }});
+  	Notes.update(this._id, {$set: { checked: ! this.checked }});
   },
   'click .down'() {
-    var task_below = Tasks.findOne({list_id: this.list_id, order: {$gt: this.order}, archivedAt: undefined }, {sort: { order: 1 }});
-    if (task_below === undefined) {return;}
-    var below_order = task_below.order;
-    Tasks.update(task_below._id, {$set: { order: this.order },});
-    Tasks.update(this._id, {$set: { order: below_order },});
+    var note_below = Notes.findOne({list_id: this.list_id, order: {$gt: this.order}, archivedAt: undefined }, {sort: { order: 1 }});
+    if (note_below === undefined) {return;}
+    var below_order = note_below.order;
+    Notes.update(note_below._id, {$set: { order: this.order },});
+    Notes.update(this._id, {$set: { order: below_order },});
   },
   'click .up'() {
-    var task_above = Tasks.findOne({list_id: this.list_id, order: {$lt: this.order}, archivedAt: undefined }, {sort: { order: -1 }});
-    if (task_above === undefined) {return;}
-    var above_order = task_above.order;
-    Tasks.update(task_above._id, {$set: { order: this.order }});
-    Tasks.update(this._id, {$set: { order: above_order }});
+    var note_above = Notes.findOne({list_id: this.list_id, order: {$lt: this.order}, archivedAt: undefined }, {sort: { order: -1 }});
+    if (note_above === undefined) {return;}
+    var above_order = note_above.order;
+    Notes.update(note_above._id, {$set: { order: this.order }});
+    Notes.update(this._id, {$set: { order: above_order }});
   },
   'mouseenter .text'() {
   	highlighed = this._id;
   },
   'dblclick .text'() {
-  	console.log("double click")
   },
   'click .text'() {
   	active = {id: this._id, dataType: DataType.NOTE};
-  	var md = Tasks.findOne(this._id).markdown;
-  	mde.value(md === undefined ? "" : md);
-    markdownPreviewMode();
-    document.getElementById("editor-name").value = this.text;
-  	document.getElementById("editor-link").value = this.external_link === undefined ? "" : this.external_link;    
-    viewEditor();
+    setMarkdown(this);
   }
 });
 
@@ -65,12 +59,7 @@ Template.list.events({
   },
   'click .list_name'() {
   	active = {id: this.list._id, dataType: DataType.LIST};
-  	var md = Lists.findOne(this.list._id).markdown;
-  	mde.value(md === undefined ? "" : md);
-    markdownPreviewMode();
-  	document.getElementById("editor-name").value = this.list.name;
-  	document.getElementById("editor-link").value = this.list.external_link === undefined ? "" : this.list.external_link;
-    viewEditor();
+    setMarkdown(this.list);
   },
   'dblclick .todo_header'() {
   	Lists.update(this.list._id, {$set: { collapsed:!this.list.collapsed }});

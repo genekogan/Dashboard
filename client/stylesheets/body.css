@@ -2,21 +2,37 @@
 .CodeMirror {
   height: 665px;
 }
-#newlist, #newtag {
+#newlist, #newtag, #newevent {
   padding:10px;
   margin-bottom:20px;
   border: 1px solid #ccc;
 }
-.newlist-name, .newtag-name {
-  width: 50%;
+#newlist-name, #newtag-name {
+  width: 80%;
   font-size: 1.0em;
 }
-.newlist-submit, .newtag-submit {
-  width: 25%;
+#newevent-name, #newevent-link {
+  width: 30%;
+  font-size: 1.0em;
+}
+#newrange-name {
+  width: 40%;
+  font-size: 1.0em;
+}
+#newevent-date, #newrange-date1, #newrange-date2 {
+  width: 20%;
+  font-size: 1.0em;
+}
+#newlist-submit, #newtag-submit, #newevent-submit, #newrange-submit {
+  width: 12%;
   font-size: 1.0em;
   border: 1px solid #aaa;
   background-color: #ff0;
   cursor:pointer;
+}
+.newrange-form {
+  margin-top:30px;
+  margin-bottom:15px;
 }
 .newlist-tag{
   background-color: #f00;
@@ -118,22 +134,25 @@
   background-color: #fff;
   margin-bottom: 50px;
   font-size: 1.5em;
-  padding: 10px;
+  padding: 2px;
   -webkit-animation-name: slideIn;
   -webkit-animation-duration: 0.4s;
   animation-name: slideIn;
   animation-duration: 0.4s
 }
+#newtag, #newevent, #newlist, #adminbuttons {
+  text-align: center;
+}
 .modal-content .close {
-    color: white;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
 }
 .modal-content .close:hover, .modal-content .close:focus {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
 }
 .modal-header {
   padding: 2px 16px;
@@ -141,6 +160,7 @@
   color: white;
 }
 .modal-footer {
+  margin-top: 20px;
   height: 20px;
   background-color: #5cb85c;
   color: white;
