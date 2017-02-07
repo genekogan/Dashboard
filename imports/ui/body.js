@@ -260,7 +260,6 @@ Template.manager.events({
     });
   },
   'click #add_column'(event) {
-    console.log("new column");
     Columns.insert({visible:[]});
   },
   'submit .newevent-form'(event) {
@@ -344,7 +343,6 @@ Template.editor.events({
       //Lists.update(active.id);
     } else if (active.dataType == DataType.NOTE) {
       Notes.update(active.id, {$set: { priority: !Notes.findOne(active.id).priority }});
-      console.log(Notes.findOne(active.id).priority);
       setPriority();
     } else if (active.dataType == DataType.EVENT) {
       //Events.update(active.id);
