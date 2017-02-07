@@ -48,33 +48,50 @@
   background-color:#0f0;
 }
 
-.editorname-form, .editorlink-form {
+.editorname-form, .editorlink-form, .editordate-form {
   display: inline-block;
   font-size: 1.6em;
   margin-right: 20px;
 }
-#editor-name, #editor-link {
+#editor-name, #editor-link, #editor-date {
   padding-right: 15px;
   font-size: 1.0em;
 }
 #editor-link {
-  width:320px;
+  width:200px;
+}
+#editor-date {
+  width:90px;
 }
 .editorlink-link:hover{
   cursor: pointer;
   color: #555;
 }
 
-.editor-view{
+.editor-view, .editor-delete, .editor-prio{
   font-size: 1.6em;
-  background-color: #ad440c;
+  background-color: #22d;
   float: right;
   padding: 2px;
   width: 50px;
   text-align: center;
   color: #fff;
 }
-.editor-view:hover {
+.editor-delete {
+  background-color: #c11;
+  width: 20px;
+  margin-left: 10px;
+} 
+.editor-prio {
+  background-color: #0a0;
+  width: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.editor-prio.priority {
+  background-color:#a00;
+}
+.editor-view:hover, .editor-delete:hover, .editor-prio:hover {
   cursor:pointer;
 }
 .editor-view.active {
@@ -140,7 +157,7 @@
   animation-name: slideIn;
   animation-duration: 0.4s
 }
-#newtag, #newevent, #newlist, #adminbuttons {
+#newtag, #newevent, #adminbuttons {
   text-align: center;
 }
 .modal-content .close {

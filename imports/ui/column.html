@@ -10,7 +10,15 @@
     {{/each}}
   </div>
 
-  <div class="archived {{#if showArchived}}active{{/if}}">✔</div>
+  {{#if priority}}
+    <div class="viewMode priority">&nbsp;</div>
+  {{else}}
+    {{#if archived}}
+      <div class="viewMode archived">✔</div>
+    {{else}}
+      <div class="viewMode all">&nbsp;</div>
+    {{/if}}
+  {{/if}}
 
   {{#each lists}}
     <div class="list">

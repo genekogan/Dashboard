@@ -14,14 +14,16 @@ Template.calendar.helpers({
     var today = new Date();
     today.setHours(0,0,0,0);
     var date = new Date("1/2/2017");
-    for (var w=0; w<32; w++) {
+    for (var w=0; w<56; w++) {
       var week = [];
       for (var wd=0; wd<7; wd++) {
         var day = {date:new Date(date), y:date.getYear(), m:1+date.getMonth(), d:date.getDate(), events_:[]};
         if (date.getTime() == today.getTime()) {
         	day.today = true;
         }
-        Events.find({date:new Date(date)}).forEach(function (event){
+        var tomorrow = new Date(date);
+        tomorrow.setDate(date.getDate()+1);
+        Events.find({date:{$gte:new Date(date), $lt:new Date(tomorrow)}}).forEach(function (event){
         	day.events_.push(event);
         });
         Travels.find({date1 : {$lte:new Date(date)}, date2: {$gte:new Date(date)}}).forEach(function (travel) {
@@ -47,11 +49,6 @@ Template.calendar.events({
   },
   'click .event'(event) {
   	active = {id: this._id, dataType: DataType.EVENT};
-  	var md = Events.findOne(this._id).markdown;
-  	mde.value(md === undefined ? "" : md);
-    setPreviewMode(true);
-  	document.getElementById("editor-name").value = this.name;
-  	document.getElementById("editor-link").value = this.external_link === undefined ? "" : this.external_link;
-    viewEditor();
+    setMarkdown(this, DataType.EVENT);
   }
 });

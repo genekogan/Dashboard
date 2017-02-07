@@ -31,7 +31,7 @@ Template.note.events({
   },
   'click .text'() {
   	active = {id: this._id, dataType: DataType.NOTE};
-    setMarkdown(this);
+    setMarkdown(this, DataType.NOTE);
   }
 });
 
@@ -59,7 +59,7 @@ Template.list.events({
   },
   'click .list_name'() {
   	active = {id: this.list._id, dataType: DataType.LIST};
-    setMarkdown(this.list);
+    setMarkdown(this.list, DataType.LIST);
   },
   'dblclick .todo_header'() {
   	Lists.update(this.list._id, {$set: { collapsed:!this.list.collapsed }});

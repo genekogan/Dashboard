@@ -6,7 +6,7 @@
   margin-top: 5px;
   background-color: #ddd;
   border: 1px solid #555;
-	width: 19%;
+	width: 12.7%;
   height: 750px;
 	display: inline-block;
   overflow-y: auto;
@@ -14,20 +14,26 @@
 .tags {
 	margin-bottom: 10px;
 }
-.archived {
+.viewMode {
 	float: right;
 }
-.tag, .archived {
+.tag, .viewMode {
   display: inline-block;
   background-color:#ff0;
   margin:2px;
   padding:1px;
   border: 1px solid #000;
 }
-.tag:hover, .archived:hover {
+.viewMode.all, .viewMode.archived {
+  background-color:#2d2;
+}
+.viewMode.priority {
+  background-color:#c22;
+}
+.tag:hover, .viewMode:hover {
   cursor:pointer;
 }
-.tag.active, .archived.active {
+.tag.active, .viewMode.active {
   background-color:#fc5;
 }
 .tags, .controls {
@@ -102,10 +108,14 @@
   border-bottom: #eee solid 1px;
 }
 .note li .text {
-  margin-left: 0px;
+  margin-left: 3px;
 }
 .note li.checked {
   color: #888;
+}
+.note li.priority {
+  /*border-left: 2px solid #f99;*/
+  border-right: 2px solid #f55;
 }
 .note li.checked .text {
   text-decoration: line-through;

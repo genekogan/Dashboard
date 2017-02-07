@@ -13,6 +13,9 @@
     <div class="column">
       {{> column idx=1}}
     </div>
+    <div class="column">
+      {{> column idx=2}}
+    </div>
 
     <div id="console">
       <div id="editor">
@@ -55,10 +58,18 @@
     <form class="editorlink-form"><span class="editorlink-link">link:</span>
       <input type="text" name="text" id="editor-link" placeholder="edit link"/>
     </form>
+  
+    <form class="editordate-form"><span class="editordate-date">date:</span>
+      <input type="text" name="text" id="editor-date" placeholder="edit date"/>
+    </form>
+
+    <div class="editor-delete">X</div>
 
     <div class="editor-view {{#if editing}}active{{/if}}">
       {{#if editing}}view{{else}}edit{{/if}}
     </div>
+
+    <div id="editor-prio-button" class="editor-prio">&nbsp;</div>
 
   </div>
 

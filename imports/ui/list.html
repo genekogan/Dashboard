@@ -38,7 +38,7 @@
 <template name="note">
 
   <div class="note">    
-    <li class="{{#if checked}}checked{{/if}}">
+    <li class="{{#if checked}}checked{{/if}}{{#if priority}}priority{{/if}}">
 
       {{#if markdown}}
       <div class="button note_md">M</div>

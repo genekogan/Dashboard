@@ -7,16 +7,11 @@ import './column.js';
 import './body.html';
 
 this.DataType = {NOTE:0, LIST:1, TAG:2, EVENT:3, TRAVEL:4};
+this.ViewMode = {ALL:0, PRIORITY:1, ARCHIVED:2};
 
 function onLoad() {
   this.mde = new SimpleMDE({
     element: document.getElementById("markdown_area"),
-    parsingConfig: {
-      allowAtxHeaderWithoutSpace: false,
-      strikethrough: false,
-      underscoresBreakWords: false,
-    },
-    forceSync: true,
     status: false,
     spellChecker: false
   });
@@ -54,13 +49,34 @@ this.setPreviewMode = function(preview) {
   }
 };
 
-this.setMarkdown = function(entry) {
-  var md = Notes.findOne(entry._id).markdown;
-  mde.value(md === undefined ? "" : md);
+this.setMarkdown = function(entry, dataType) {
+  var markdown;
+  if (dataType == DataType.NOTE) {
+    markdown = Notes.findOne(entry._id).markdown;
+  } else if (dataType == DataType.LIST) {
+    markdown = Lists.findOne(entry._id).markdown;
+  } else if (dataType == DataType.EVENT) {
+    markdown = Events.findOne(entry._id).markdown;
+  }
+  mde.value(markdown === undefined ? "" : markdown);
   setPreviewMode(true);
-  document.getElementById("editor-name").value = entry.text;
-  document.getElementById("editor-link").value = entry.external_link === undefined ? "" : entry.external_link;    
+  $("#editor-name").val( dataType == DataType.NOTE ? entry.text : entry.name );
+  $("#editor-link").val( entry.external_link === undefined ? "" : entry.external_link );    
+  if (dataType == DataType.EVENT) {
+    $(".editordate-date").show();    
+    $("#editor-date").show();
+    $("#editor-date").val( entry.date === undefined ? "" : (1+entry.date.getMonth())+"/"+entry.date.getDate()+"/"+entry.date.getFullYear() );      
+  } else {
+    $(".editordate-date").hide();
+    $("#editor-date").hide();
+  }
+  setPriority();
   viewEditor();
+};
+
+this.setPriority = function() {
+  var priority = Notes.findOne(active.id).priority;
+  $("#editor-prio-button").attr('class', priority ? 'editor-prio priority' : 'editor-prio')
 };
 
 this.viewEditor = function() {
@@ -215,10 +231,12 @@ Template.manager.events({
     Travels.find({}).forEach(function (t){Travels.remove(t._id)});
   },
   'click #dump_json'(event) {
-    var json = {tags:[], lists:[], notes:[]};
+    var json = {tags:[], lists:[], notes:[], events:[], travels:[]};
     Tags.find({}).forEach(function (t){json.tags.push(t);});
     Lists.find({}).forEach(function (l){json.lists.push(l);});
     Notes.find({}).forEach(function (t){json.notes.push(t);});
+    Events.find({}).forEach(function (e){json.events.push(e);});
+    Travels.find({}).forEach(function (t){json.travels.push(t);});
     var data = JSON.stringify(json);
     var url = 'data:text/json;charset=utf8,'+encodeURIComponent(data);
     window.open(url, '_blank');
@@ -290,6 +308,7 @@ Template.editor.events({
       Notes.update(active.id, {$set: { text: event.target.text.value }});
     } else if (active.dataType == DataType.EVENT) {
       Events.update(active.id, {$set: { name: event.target.text.value }});
+      viewCalendar();
     }
   },
   'submit .editorlink-form'(event) {
@@ -300,6 +319,15 @@ Template.editor.events({
       Notes.update(active.id, {$set: { external_link: event.target.text.value }});
     } else if (active.dataType == DataType.EVENT) {
       Events.update(active.id, {$set: { external_link: event.target.text.value }});
+      viewCalendar();
+    }
+  },
+  'submit .editordate-form'(event) {
+    event.preventDefault();
+    if (active.dataType == DataType.EVENT) {
+      var date = new Date($("#editor-date").val());
+      Events.update(active.id, {$set: { date: date }});
+      viewCalendar();
     }
   },
   'click .editor-view'(event, instance) {
@@ -308,6 +336,28 @@ Template.editor.events({
     } else {
       setPreviewMode(false);
     }    
+  },
+  'click .editor-prio'(event, instance) {
+    if (active.dataType == DataType.LIST) {
+      //Lists.update(active.id);
+    } else if (active.dataType == DataType.NOTE) {
+      Notes.update(active.id, {$set: { priority: !Notes.findOne(active.id).priority }});
+      console.log(Notes.findOne(active.id).priority);
+      setPriority();
+    } else if (active.dataType == DataType.EVENT) {
+      //Events.update(active.id);
+    }
+  },
+  'click .editor-delete'(event, instance) {
+    if (!confirm("Are you sure you want to delete this event?")) return;
+    if (active.dataType == DataType.LIST) {
+      Lists.remove(active.id);
+    } else if (active.dataType == DataType.NOTE) {
+      Notes.remove(active.id);
+    } else if (active.dataType == DataType.EVENT) {
+      Events.remove(active.id);
+    }
+    viewCalendar();
   },
   'click .editorlink-link'(event) {
     if (active.dataType == DataType.LIST) {
