@@ -51,14 +51,14 @@
 .editorname-form, .editorlink-form, .editordate-form {
   display: inline-block;
   font-size: 1.6em;
-  margin-right: 20px;
+  margin-right: 15px;
 }
 #editor-name, #editor-link, #editor-date {
-  padding-right: 15px;
+  padding-right: 10px;
   font-size: 1.0em;
 }
 #editor-link {
-  width:200px;
+  width:185px;
 }
 #editor-date {
   width:90px;

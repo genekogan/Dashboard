@@ -70,7 +70,9 @@ this.setMarkdown = function(entry, dataType) {
     $(".editordate-date").hide();
     $("#editor-date").hide();
   }
-  setPriority();
+  if (dataType == DataType.NOTE) {
+  	setPriority();
+  }
   viewEditor();
 };
 
