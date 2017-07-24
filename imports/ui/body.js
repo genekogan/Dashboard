@@ -63,12 +63,27 @@ this.setMarkdown = function(entry, dataType) {
   $("#editor-name").val( dataType == DataType.NOTE ? entry.text : entry.name );
   $("#editor-link").val( entry.external_link === undefined ? "" : entry.external_link );    
   if (dataType == DataType.EVENT) {
+    $("#editor-date").val( entry.date === undefined ? "" : (1+entry.date.getMonth())+"/"+entry.date.getDate()+"/"+entry.date.getFullYear() );      
     $(".editordate-date").show();    
     $("#editor-date").show();
-    $("#editor-date").val( entry.date === undefined ? "" : (1+entry.date.getMonth())+"/"+entry.date.getDate()+"/"+entry.date.getFullYear() );      
+    $(".editordate-date2").hide(); 
+    $("#editor-date2").hide();
+    $(".editorlink-form").show();
+    $(".editorlink-form").show();
+  } else if (dataType == DataType.TRAVEL) {
+    $("#editor-date").val( entry.date1 === undefined ? "" : (1+entry.date1.getMonth())+"/"+entry.date1.getDate()+"/"+entry.date1.getFullYear() );      
+    $("#editor-date2").val( entry.date2 === undefined ? "" : (1+entry.date2.getMonth())+"/"+entry.date2.getDate()+"/"+entry.date2.getFullYear() );      
+    $(".editordate-date").show();    
+    $("#editor-date").show();
+    $(".editordate-date2").show(); 
+    $("#editor-date2").show();
+    $(".editorlink-form").hide();   
   } else {
     $(".editordate-date").hide();
     $("#editor-date").hide();
+    $(".editordate-date2").hide();  
+    $("#editor-date2").hide();
+    $(".editorlink-form").show();  
   }
   if (dataType == DataType.NOTE) {
   	setPriority();
@@ -329,6 +344,18 @@ Template.editor.events({
       var date = new Date($("#editor-date").val());
       Events.update(active.id, {$set: { date: date }});
       viewCalendar();
+    } else if (active.dataType == DataType.TRAVEL) {
+      var date = new Date($("#editor-date").val());
+      Travels.update(active.id, {$set: { date1: date }});
+      viewCalendar();
+    }
+  },
+  'submit .editordate-form2'(event) {
+    event.preventDefault();
+    if (active.dataType == DataType.TRAVEL) {
+      var date = new Date($("#editor-date2").val());
+      Travels.update(active.id, {$set: { date2: date }});
+      viewCalendar();
     }
   },
   'click .editor-view'(event, instance) {
@@ -356,6 +383,8 @@ Template.editor.events({
       Notes.remove(active.id);
     } else if (active.dataType == DataType.EVENT) {
       Events.remove(active.id);
+    } else if (active.dataType == DataType.TRAVEL) {
+      Travels.remove(active.id);
     }
     viewCalendar();
   },

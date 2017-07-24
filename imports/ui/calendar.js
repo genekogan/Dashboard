@@ -13,7 +13,8 @@ Template.calendar.helpers({
     var data = [];
     var today = new Date();
     today.setHours(0,0,0,0);
-    var date = new Date("1/2/2017");
+    // var date = new Date("8/2/2016");
+    var date = new Date("5/22/2017");
     for (var w=0; w<56; w++) {
       var week = [];
       for (var wd=0; wd<7; wd++) {
@@ -46,6 +47,13 @@ Template.calendar.events({
   	$("#newrange-date1").val((1+date.getMonth())+"/"+date.getDate()+"/"+date.getFullYear());
   	$("#newrange-date2").val((1+date.getMonth())+"/"+date.getDate()+"/"+date.getFullYear());
     viewNewEvent();
+  },
+  'click .topbar'(event) {
+    var travel = Travels.findOne({date1 : {$lte:new Date(this.date)}, date2: {$gte:new Date(this.date)}});
+    if (travel !== undefined) {
+      active = {id: travel._id, dataType: DataType.TRAVEL};
+      setMarkdown(travel, DataType.TRAVEL);
+    }
   },
   'click .event'(event) {
   	active = {id: this._id, dataType: DataType.EVENT};

@@ -29,7 +29,7 @@ Template.column.helpers({
     if (instance.state.get('viewMode') == ViewMode.ARCHIVED) {
       note_condition = {archivedAt: {$ne:undefined}};
     } else if (instance.state.get('viewMode') == ViewMode.PRIORITY) {
-      note_condition = {archivedAt: undefined, priority: true};
+      note_condition = {archivedAt: undefined, priority: true, checked: {$in:[undefined, false]}};
     } else {
       note_condition = {archivedAt: undefined};
     }

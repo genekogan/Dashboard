@@ -1,68 +1,72 @@
-  .calendar {
-    border-bottom: 0.5px solid #888;
-  }
-  .week, #daysofweek {
-    height: 85px;
-    display: flex;
-    border-left: 0.5px solid #888;
-  }
-  #daysofweek {
-    height: 20px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 1.1em;
-  }
-  .day, .dow {
-    border-top: 0.5px solid #888;
-    border-right: 0.5px solid #888;
-    width: 14.1%;
-    height: 100%;
-    margin: 0px;
-    padding: 0px;
-    display: inline-block;
-    vertical-align: top;
-    overflow-x:scroll;
-  }
-  .dow {
-    background-color: #434343;
-    color: #fff;
-  }
-  .day.today {
-    background-color:#e5e5e5;
-  }
-  .topbar{    
-    font-size: 1.0em;
-    font-weight: bold;
-    padding-top: 1px;
-  }
-  .event:hover {
-    cursor: pointer;
-    background-color: #ff0;
-  }
-  .event.markdown {
-    border-bottom: 1px dashed #aaa;
-  }
-  .date_content ul {
-    margin: 0;
-    padding: 0;
-  } 
-  .date_content li {
-    font-size: 0.9em;
-    border-bottom: 0px;   
-    list-style: none;
-    padding: 2px;
-    vertical-align: top;
-  }  
-  .date_content a {
-    text-decoration: none;
-    color: #777;
-  }
-  .date_content a:hover {
-    color: #00f;
-  }
-  .topbar.active0{background-color: #aff;}
-  .topbar.active1{background-color: #faa;}
-  .topbar.active2{background-color: #ffa;}
-  .topbar.active3{background-color: #aaf;}  
-  .topbar.active4{background-color: #faf;}
-  .topbar.active5{background-color: #afa;}
+.calendar {
+  border-bottom: 0.5px solid #888;
+}
+.week, #daysofweek {
+  height: 85px;
+  display: flex;
+  border-left: 0.5px solid #888;
+}
+#daysofweek {
+  height: 20px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+.day, .dow {
+  border-top: 0.5px solid #888;
+  border-right: 0.5px solid #888;
+  width: 14.1%;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  display: inline-block;
+  vertical-align: top;
+  overflow-x:scroll;
+}
+.dow {
+  background-color: #434343;
+  color: #fff;
+}
+.day.today {
+  background-color:#e5e5e5;
+}
+.topbar{    
+  font-size: 1.0em;
+  font-weight: bold;
+  padding-top: 1px;
+}
+.event:hover {
+  cursor: pointer;
+  background-color: #ff0;
+}
+.event.markdown {
+  border-bottom: 1px dashed #aaa;
+}
+.date_content ul {
+  margin: 0;
+  padding: 0;
+} 
+.date_content li {
+  font-size: 0.9em;
+  border-bottom: 0px;   
+  list-style: none;
+  padding: 2px;
+  vertical-align: top;
+}  
+.date_content a {
+  text-decoration: none;
+  color: #777;
+}
+.date_content a:hover {
+  color: #00f;
+}
+.topbar.active0{background-color: #aff;}
+.topbar.active1{background-color: #faa;}
+.topbar.active2{background-color: #ffa;}
+.topbar.active3{background-color: #aaf;}  
+.topbar.active4{background-color: #faf;}
+.topbar.active5{background-color: #afa;}
+.topbar.active0:hover, .topbar.active1:hover, .topbar.active2:hover, .topbar.active3:hover, .topbar.active4:hover, .topbar.active5:hover {
+  cursor:pointer;
+
+}

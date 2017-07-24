@@ -48,19 +48,19 @@
   background-color:#0f0;
 }
 
-.editorname-form, .editorlink-form, .editordate-form {
+.editorname-form, .editorlink-form, .editordate-form, .editordate-form2 {
   display: inline-block;
   font-size: 1.6em;
   margin-right: 15px;
 }
-#editor-name, #editor-link, #editor-date {
+#editor-name, #editor-link, #editor-date, #editor-date2 {
   padding-right: 10px;
   font-size: 1.0em;
 }
 #editor-link {
-  width:185px;
+  width:175px;
 }
-#editor-date {
+#editor-date, #editor-date2 {
   width:90px;
 }
 .editorlink-link:hover{
