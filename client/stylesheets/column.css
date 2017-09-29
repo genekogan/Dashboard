@@ -13,9 +13,7 @@
 }
 .tags {
 	margin-bottom: 10px;
-}
-.viewMode {
-	float: right;
+  width:20px;
 }
 .tag, .viewMode {
   display: inline-block;
@@ -24,6 +22,11 @@
   padding:1px;
   border: 1px solid #000;
 }
+.viewMode {
+  margin-left:145px;
+  /*float:right;*/
+}
+
 .viewMode.all, .viewMode.archived {
   background-color:#2d2;
 }

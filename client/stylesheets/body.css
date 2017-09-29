@@ -48,17 +48,18 @@
   background-color:#0f0;
 }
 
-.editorname-form, .editorlink-form, .editordate-form, .editordate-form2 {
+.editorname-form, .editorlink-form, .editorlist-form, .editordate-form, .editordate-form2 {
   display: inline-block;
   font-size: 1.6em;
   margin-right: 15px;
 }
-#editor-name, #editor-link, #editor-date, #editor-date2 {
+#editor-name, #editor-link, #editor-list, #editor-date, #editor-date2 {
   padding-right: 10px;
   font-size: 1.0em;
+  width:210px;
 }
-#editor-link {
-  width:175px;
+#editor-link, #editor-list {
+  width:130px;
 }
 #editor-date, #editor-date2 {
   width:90px;

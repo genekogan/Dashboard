@@ -1,4 +1,3 @@
-
 <body>
 
   <div id="content">
@@ -8,18 +7,22 @@
     </div>
 
     <div class="column">
+      {{> sticky}}
+    </div>
+    
+    <!--<div class="column">
+      {{> column idx=0}}
+    </div>-->
+    <div class="column">
       {{> column idx=0}}
     </div>
     <div class="column">
       {{> column idx=1}}
     </div>
-    <div class="column">
-      {{> column idx=2}}
-    </div>
 
     <div id="console">
       <div id="editor">
-        {{> editor}}    
+        {{> editor}}
       </div>
       <div id="calendar">
         {{> calendar}}
@@ -45,6 +48,11 @@
 </template>
 
 
+<!-- editor -->
+<template name="sticky">
+  <textarea id="stickynote" style="height:99%;width:97%;background-color:{{#if unsaved}}#fba{{else}}#ffb{{/if}};font-family:Geneva;font-size:1.0em;">{{sticky}}</textarea>
+</template>
+
 
 <!-- editor -->
 <template name="editor">
@@ -58,7 +66,11 @@
     <form class="editorlink-form"><span class="editorlink-link">link:</span>
       <input type="text" name="text" id="editor-link" placeholder="edit link"/>
     </form>
-  
+
+    <form class="editorlist-form"><span class="editorlist-list">list:</span>
+      <input type="text" name="text" id="editor-list" placeholder="edit list"/>
+    </form>
+
     <form class="editordate-form"><span class="editordate-date">date:</span>
       <input type="text" name="text" id="editor-date" placeholder="edit date"/>
     </form>

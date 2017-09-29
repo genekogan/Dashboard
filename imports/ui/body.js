@@ -9,6 +9,38 @@ import './body.html';
 this.DataType = {NOTE:0, LIST:1, TAG:2, EVENT:3, TRAVEL:4};
 this.ViewMode = {ALL:0, PRIORITY:1, ARCHIVED:2};
 
+
+
+Template.sticky.events({
+  'click #stickynote'(event) {
+    var markdown = Notes.findOne({list_id: null}).markdown;
+  },
+  'keypress #stickynote': function(event) { 
+    var note = $("#stickynote").val();
+    var sticky = Notes.findOne({list_id: null});
+    if (note !== sticky.markdown) {
+      Session.set('unsaved', true);
+    }
+    if (event.which == 92) {
+      if (note !== sticky.markdown) {
+        Notes.update(sticky._id, {$set: {markdown: note}});
+        Session.set('unsaved', false);
+      }
+    }
+  }
+});
+
+Template.sticky.helpers({
+  sticky(){
+    var sticky = Notes.findOne({list_id: null});
+    return sticky !== undefined ? sticky.markdown : "";
+  },
+  unsaved(){
+    return Session.get("unsaved");
+  }
+});
+
+
 function onLoad() {
   this.mde = new SimpleMDE({
     element: document.getElementById("markdown_area"),
@@ -62,6 +94,7 @@ this.setMarkdown = function(entry, dataType) {
   setPreviewMode(true);
   $("#editor-name").val( dataType == DataType.NOTE ? entry.text : entry.name );
   $("#editor-link").val( entry.external_link === undefined ? "" : entry.external_link );    
+  $("#editor-list").val( dataType == DataType.NOTE ? Lists.findOne({_id:entry.list_id}).name : "" );
   if (dataType == DataType.EVENT) {
     $("#editor-date").val( entry.date === undefined ? "" : (1+entry.date.getMonth())+"/"+entry.date.getDate()+"/"+entry.date.getFullYear() );      
     $(".editordate-date").show();    
@@ -70,6 +103,8 @@ this.setMarkdown = function(entry, dataType) {
     $("#editor-date2").hide();
     $(".editorlink-form").show();
     $(".editorlink-form").show();
+    $(".editorlist-form").hide();
+    $("#editor-list").hide();
   } else if (dataType == DataType.TRAVEL) {
     $("#editor-date").val( entry.date1 === undefined ? "" : (1+entry.date1.getMonth())+"/"+entry.date1.getDate()+"/"+entry.date1.getFullYear() );      
     $("#editor-date2").val( entry.date2 === undefined ? "" : (1+entry.date2.getMonth())+"/"+entry.date2.getDate()+"/"+entry.date2.getFullYear() );      
@@ -78,12 +113,16 @@ this.setMarkdown = function(entry, dataType) {
     $(".editordate-date2").show(); 
     $("#editor-date2").show();
     $(".editorlink-form").hide();   
+    $(".editorlist-form").hide();
+    $("#editor-list").hide();
   } else {
     $(".editordate-date").hide();
     $("#editor-date").hide();
     $(".editordate-date2").hide();  
     $("#editor-date2").hide();
     $(".editorlink-form").show();  
+    $(".editorlist-form").show();
+    $("#editor-list").show();
   }
   if (dataType == DataType.NOTE) {
   	setPriority();
@@ -161,6 +200,7 @@ Template.manager.onCreated(function bodyOnCreated() {
 
 Template.editor.onCreated(function bodyOnCreated() {
   Session.set('editing', false);
+  Session.set('unsaved', false);
   this.state = new ReactiveDict();
 });
 
@@ -280,8 +320,9 @@ Template.manager.events({
   'submit .newevent-form'(event) {
     event.preventDefault();
     var name = $("#newevent-name").val();
-    var date = new Date($("#newevent-date").val());
     var link = $("#newevent-link").val();
+    var date = new Date($("#newevent-date").val()+" 12:00:00 GMT+0000");
+    date.setUTCHours(12,0,0);
     if (link !== "") {
       Events.insert({name: name, date: date, external_link: link});
     } else {
@@ -292,8 +333,10 @@ Template.manager.events({
   'submit .newrange-form'(event) {
     event.preventDefault();
     var name = $("#newrange-name").val();
-    var date1 = new Date($("#newrange-date1").val().split());
-    var date2 = new Date($("#newrange-date2").val().split());
+    var date1 = new Date($("#newrange-date1").val().split()+" 12:00:00 GMT+0000");
+    var date2 = new Date($("#newrange-date2").val().split()+" 12:00:00 GMT+0000");
+    date1.setUTCHours(12,0,0);
+    date2.setUTCHours(12,0,0);
     Travels.insert({name: name, date1: date1, date2: date2, color_idx: Travels.find().count() % 6});
     hideModal();
   },
@@ -341,11 +384,13 @@ Template.editor.events({
   'submit .editordate-form'(event) {
     event.preventDefault();
     if (active.dataType == DataType.EVENT) {
-      var date = new Date($("#editor-date").val());
+      var date = new Date($("#editor-date").val()+" 12:00:00 GMT+0000");
+      date.setUTCHours(12,0,0);
       Events.update(active.id, {$set: { date: date }});
       viewCalendar();
     } else if (active.dataType == DataType.TRAVEL) {
-      var date = new Date($("#editor-date").val());
+      var date = new Date($("#editor-date").val()+" 12:00:00 GMT+0000");
+      date.setUTCHours(12,0,0);
       Travels.update(active.id, {$set: { date1: date }});
       viewCalendar();
     }
@@ -353,10 +398,25 @@ Template.editor.events({
   'submit .editordate-form2'(event) {
     event.preventDefault();
     if (active.dataType == DataType.TRAVEL) {
-      var date = new Date($("#editor-date2").val());
+      var date = new Date($("#editor-date2").val()+" 12:00:00 GMT+0000");
+      date.setUTCHours(12,0,0);
       Travels.update(active.id, {$set: { date2: date }});
       viewCalendar();
     }
+  },
+  'submit .editorlist-form'(event) {
+    event.preventDefault();
+    if (active.dataType == DataType.NOTE) {
+      var list_to = Lists.findOne({name:event.target.text.value});
+      if (list_to !== undefined) {
+        var last_note = Notes.findOne({list_id: list_to._id, archivedAt: undefined }, {sort: { order: -1 }});
+        if (last_note !== undefined) {
+          Notes.update(active.id, { $set: { list_id: list_to._id, order: last_note.order+1 }});
+        } else {
+          Notes.update(active.id, { $set: { list_id: list_to._id }});
+        }
+      }
+    } 
   },
   'click .editor-view'(event, instance) {
     if (Session.get('editing')) {

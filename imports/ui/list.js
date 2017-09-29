@@ -11,6 +11,17 @@ Template.note.events({
   	Notes.update(this._id, {$set: { checked: ! this.checked }});
   },
   'click .down'() {
+
+    // Notes.find({list_id: this.list_id}).forEach(function(n) {
+    //   console.log(n)
+    // });
+
+
+
+    // Notes.find({list_id: this.list_id, order: {$gte: this.order}, archivedAt: undefined}).forEach(function(n) {
+    //   console.log(n)
+    // });
+
     var note_below = Notes.findOne({list_id: this.list_id, order: {$gt: this.order}, archivedAt: undefined }, {sort: { order: 1 }});
     if (note_below === undefined) {return;}
     var below_order = note_below.order;
@@ -19,6 +30,8 @@ Template.note.events({
   },
   'click .up'() {
     var note_above = Notes.findOne({list_id: this.list_id, order: {$lt: this.order}, archivedAt: undefined }, {sort: { order: -1 }});
+
+
     if (note_above === undefined) {return;}
     var above_order = note_above.order;
     Notes.update(note_above._id, {$set: { order: this.order }});
