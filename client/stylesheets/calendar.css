@@ -5,6 +5,8 @@
   height: 85px;
   display: flex;
   border-left: 0.5px solid #888;
+  padding:0px;
+  margin:0px;
 }
 #daysofweek {
   height: 20px;
@@ -21,7 +23,8 @@
   padding: 0px;
   display: inline-block;
   vertical-align: top;
-  overflow-x:scroll;
+  overflow-y:auto;
+  /*overflow-x:hidden;*/
 }
 .dow {
   background-color: #434343;

@@ -10,7 +10,6 @@ this.DataType = {NOTE:0, LIST:1, TAG:2, EVENT:3, TRAVEL:4};
 this.ViewMode = {ALL:0, PRIORITY:1, ARCHIVED:2};
 
 
-
 Template.sticky.events({
   'click #stickynote'(event) {
     var markdown = Notes.findOne({list_id: null}).markdown;
@@ -41,6 +40,12 @@ Template.sticky.helpers({
 });
 
 
+function resizeWindow() {
+  $(".column").css("height", (window.innerHeight-50)+"px");
+  $("#console").css("height", (window.innerHeight-64)+"px");
+  $(".CodeMirror").css("height", (window.innerHeight-135)+"px");
+}
+
 function onLoad() {
   this.mde = new SimpleMDE({
     element: document.getElementById("markdown_area"),
@@ -57,6 +62,7 @@ function onLoad() {
     }
   });
   viewCalendar();
+  resizeWindow();
 };
 
 this.setPreviewMode = function(preview) {

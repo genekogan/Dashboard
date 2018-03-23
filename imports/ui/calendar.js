@@ -14,6 +14,7 @@ Template.calendar.helpers({
     var today = new Date();
     today.setUTCHours(12,0,0);
     var date = new Date(today);
+    //date.setDate(date.getDate()-300);
     date.setDate(date.getDate()-14);
     while (date.getDay() != 1) {
       date.setDate(date.getDate()-1);
