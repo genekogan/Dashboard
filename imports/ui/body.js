@@ -7,7 +7,8 @@ import './column.js';
 import './body.html';
 
 this.DataType = {NOTE:0, LIST:1, TAG:2, EVENT:3, TRAVEL:4};
-this.ViewMode = {ALL:0, PRIORITY:1, ARCHIVED:2};
+//this.ViewMode = {ALL:0, PRIORITY:1, ARCHIVED:2};
+this.ViewMode = {ALL:0, PRIORITY:1};
 
 
 Template.sticky.events({
@@ -63,6 +64,17 @@ function onLoad() {
   });
   viewCalendar();
   resizeWindow();
+
+  //console.log("find",Notes.find({}).count())
+  /*
+  if (Notes.find({list_id: null}).count() == 0) {
+    console.log("MAKE first one",Notes.find({list_id: null}).count()  )
+    notes.insert({text:'hello world', list_id: null, order: 0, createdAt: new Date()});
+  }
+  else {
+    console.log("alrady found")
+  }*/
+
 };
 
 this.setPreviewMode = function(preview) {
@@ -308,7 +320,8 @@ Template.manager.events({
   'click #load_json'(event) {
 
   },
-  'click #remove_checked'(event) {     
+  'click #remove_checked'(event) {   
+    /*  
     var date = new Date();
     Lists.find({checked: true, archivedAt: undefined}).forEach(function (list){
       Notes.find({list_id:list._id, archivedAt: undefined}).forEach(function (note){
@@ -319,6 +332,18 @@ Template.manager.events({
     Notes.find({checked: true, archivedAt: undefined}).forEach(function (note){
       Notes.update(note._id, { $set: { archivedAt: date }});
     });
+    */
+
+    Lists.find({checked: true}).forEach(function (list){
+      Notes.find({list_id:list._id}).forEach(function (note){
+        Notes.remove(note._id);
+      });
+      Lists.remove(list._id);
+    });
+    Notes.find({checked: true}).forEach(function (note){
+      Notes.remove(note._id);
+    });
+
   },
   'click #add_column'(event) {
     Columns.insert({visible:[]});
@@ -343,7 +368,7 @@ Template.manager.events({
     var date2 = new Date($("#newrange-date2").val().split()+" 12:00:00 GMT+0000");
     date1.setUTCHours(12,0,0);
     date2.setUTCHours(12,0,0);
-    Travels.insert({name: name, date1: date1, date2: date2, color_idx: Travels.find().count() % 6});
+    Travels.insert({name: name, date1: date1, date2: date2});
     hideModal();
   },
   'click .event'(event) {
@@ -415,7 +440,7 @@ Template.editor.events({
     if (active.dataType == DataType.NOTE) {
       var list_to = Lists.findOne({name:event.target.text.value});
       if (list_to !== undefined) {
-        var last_note = Notes.findOne({list_id: list_to._id, archivedAt: undefined }, {sort: { order: -1 }});
+        var last_note = Notes.findOne({list_id: list_to._id }, {sort: { order: -1 }});
         if (last_note !== undefined) {
           Notes.update(active.id, { $set: { list_id: list_to._id, order: last_note.order+1 }});
         } else {

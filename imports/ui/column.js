@@ -26,13 +26,16 @@ Template.column.helpers({
     const instance = Template.instance();
     var list_condition = {};
     var note_condition = {};
-    if (instance.state.get('viewMode') == ViewMode.ARCHIVED) {
+    /*if (instance.state.get('viewMode') == ViewMode.ARCHIVED) {
       note_condition = {archivedAt: {$ne:undefined}};
     } else if (instance.state.get('viewMode') == ViewMode.PRIORITY) {
       note_condition = {archivedAt: undefined, priority: true, checked: {$in:[undefined, false]}};
     } else {
       note_condition = {archivedAt: undefined};
-    }
+    }*/
+    if (instance.state.get('viewMode') == ViewMode.PRIORITY) {
+      note_condition = {priority: true, checked: {$in:[undefined, false]}};
+    } 
     var tags = [];
     Tags.find({}, {sort:{order:1}}).forEach(function(t){if (instance.state.get(t._id)){tags.push(t._id)}});
     if (tags.length > 0) {
@@ -43,7 +46,10 @@ Template.column.helpers({
     lists.forEach(function(list) {
       note_condition.list_id = list._id;
       var notes = Notes.find(note_condition, {sort:{order:1}});
-      if (notes.count() > 0 || (!list.checked && !instance.state.get('viewMode') == ViewMode.ARCHIVED)) {
+      /*if (notes.count() > 0 || (!list.checked && !instance.state.get('viewMode') == ViewMode.ARCHIVED)) {
+        data.push({list: list, note_list: notes})
+      }*/
+      if (notes.count() > 0 || (!list.checked)) {
         data.push({list: list, note_list: notes})
       }
     });
@@ -60,11 +66,11 @@ Template.column.helpers({
   priority(){
     const instance = Template.instance();
     return instance.state.get('viewMode') == ViewMode.PRIORITY;
-  },
+  }/*,
   archived(){
     const instance = Template.instance();
     return instance.state.get('viewMode') == ViewMode.ARCHIVED;
-  }
+  }*/
 });
 
 
@@ -77,10 +83,18 @@ Template.column.events({
     event.target.text.value = '';
   },
   'click .viewMode'(event, instance) {
+    /*
     if (instance.state.get('viewMode') == ViewMode.ALL) {
       instance.state.set('viewMode', ViewMode.PRIORITY);
-    } else if (instance.state.get('viewMode') == ViewMode.PRIORITY) {
+    } 
+    else if (instance.state.get('viewMode') == ViewMode.PRIORITY) {
       instance.state.set('viewMode', ViewMode.ARCHIVED);
+    } 
+    else {
+      instance.state.set('viewMode', ViewMode.ALL);
+    }*/
+    if (instance.state.get('viewMode') == ViewMode.ALL) {
+      instance.state.set('viewMode', ViewMode.PRIORITY);
     } else {
       instance.state.set('viewMode', ViewMode.ALL);
     }

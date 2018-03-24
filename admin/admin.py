@@ -6,6 +6,41 @@ from dateutil import parser
 from datetime import datetime
 import subprocess
 
+out2 = '''
+
+commit d069157d42e3acfae9e41d9dc701ddc13039ba09
+Author: Gene Kogan <kogan.gene@gmail.com>
+Date:   Sat Mar 28 14:14:41 2018 +0100
+
+    03/24/18
+
+commit fb5882e3dba8d48b2d045a788db2dc88a65e4c3f
+Author: Gene Kogan <kogan.gene@gmail.com>
+Date:   Sat Mar 27 14:13:56 2018 +0100
+
+    03/24/18
+
+commit ff7414c881cabdd5792945fd607594511d3fd29d
+Author: Gene Kogan <kogan.gene@gmail.com>
+Date:   Sat Mar 26 14:13:06 2018 +0100
+
+    03/24/18
+
+commit c15996b9873213b5d265ed2d58114d4bbac65d13
+Author: Gene Kogan <kogan.gene@gmail.com>
+Date:   Sat Mar 25 14:11:09 2018 +0100
+
+    03/24/18
+
+commit 792916a1900af5832a158dac3a86e1158da4ebb5
+Author: Gene Kogan <kogan.gene@gmail.com>
+Date:   Sat Mar 24 14:10:27 2018 +0100
+
+    03/24/18
+
+
+
+'''
 
 
 
@@ -26,9 +61,7 @@ def export_db():
 
 	cmd += 'cd admin/backup ; '
 	cmd += 'git add *.json ; '
-	cmd = 'git commit -m "%s" ; ' % str(datetime.today())#time.strftime("%x")
-
-	parse.parse(datetime.today())
+	cmd += 'git commit -m "%s" ; ' % str(datetime.today())#time.strftime("%x")
 
 	print(cmd)
 	os.system(cmd)
@@ -64,6 +97,7 @@ def query_db(date_str):
 	cmd = 'cd %s ; cd admin/backup ; git log'%root
 	proc = subprocess.Popen([cmd], stdout=subprocess.PIPE, shell=True)
 	out, err = proc.communicate()
+	out = out2
 	pattern = 'commit (.+)\nAuthor: (.+)+\nDate:   (.+)+'
 	commits = re.findall(pattern, out)
 	query = parser.parse(query_string)

@@ -19,6 +19,8 @@ Template.calendar.helpers({
     while (date.getDay() != 1) {
       date.setDate(date.getDate()-1);
     }
+    var color_idx = 0;
+    var curr_travel_id = -1;
     for (var w=0; w<60; w++) {
       var week = [];
       for (var wd=0; wd<7; wd++) {
@@ -33,8 +35,13 @@ Template.calendar.helpers({
         	day.events_.push(event_);
         });
         Travels.find({date1 : {$lte:new Date(d2)}, date2: {$gte:new Date(d1)}}).forEach(function (travel) {
+          if (curr_travel_id != travel._id){
+            color_idx = (color_idx + 1) % 6;
+            curr_travel_id = travel._id;
+          }
         	day.location = travel.name;
-        	day.color_idx = "active"+travel.color_idx;
+          day.color_idx = "active"+color_idx;
+          //day.color_idx = "active"+travel.color_idx;
         });
         week.push(day);
         date.setDate(date.getDate()+1);
