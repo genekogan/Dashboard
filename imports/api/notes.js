@@ -7,6 +7,7 @@ export const Events = new Mongo.Collection('events');
 export const Travels = new Mongo.Collection('travels');
 
 
+
 if (Meteor.isServer) {
 	Meteor.publish('notes_loaded', function(){return Notes.find({})}, {is_auto: true});
 }

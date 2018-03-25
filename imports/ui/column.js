@@ -11,13 +11,30 @@ Template.column.onCreated(function bodyOnCreated() {
   this.active = {id:-1, dataType:null};
   const instance = Template.instance();
   instance.state.set("viewMode", ViewMode.ALL);
+  instance.state.set("columnIdx", this.data.idx);
+
+  console.log("found",Lists.find().count());
+
+  console.log("HI ",this.data)
+
+  // if (this.data.idx==0) {
+  //   instance.state.set("2APyZ2nSHkYoYXBKD", true);
+  // } else if (this.data.idx==1) {
+  //   instance.state.set("J8BRZCr3MG87YXTKi", true);
+  // } else if (this.data.idx==2) {
+  //   instance.state.set("qQoDYzj3srMQgW7cb", true);
+//  }
+
+/*
   if (this.data.idx==0) {
-    instance.state.set("2APyZ2nSHkYoYXBKD", true);
+    instance.state.set("todo", true);
   } else if (this.data.idx==1) {
-    instance.state.set("J8BRZCr3MG87YXTKi", true);
+    instance.state.set("work", true);
   } else if (this.data.idx==2) {
-    instance.state.set("qQoDYzj3srMQgW7cb", true);
-  }
+    instance.state.set("write", true);
+ }
+ */
+
 });
 
 
@@ -26,18 +43,17 @@ Template.column.helpers({
     const instance = Template.instance();
     var list_condition = {};
     var note_condition = {};
-    /*if (instance.state.get('viewMode') == ViewMode.ARCHIVED) {
-      note_condition = {archivedAt: {$ne:undefined}};
-    } else if (instance.state.get('viewMode') == ViewMode.PRIORITY) {
-      note_condition = {archivedAt: undefined, priority: true, checked: {$in:[undefined, false]}};
-    } else {
-      note_condition = {archivedAt: undefined};
-    }*/
     if (instance.state.get('viewMode') == ViewMode.PRIORITY) {
+      //note_condition = {priority: true};
       note_condition = {priority: true, checked: {$in:[undefined, false]}};
     } 
     var tags = [];
-    Tags.find({}, {sort:{order:1}}).forEach(function(t){if (instance.state.get(t._id)){tags.push(t._id)}});
+    
+
+    Tags.find({}, {sort:{order:1}}).forEach(function(t){if (instance.state.get(t._id)){}}); // hack to force refresh
+    Tags.find({}, {sort:{order:1}}).forEach(function(t){if (localStorage.getItem('Dashboard_c'+instance.state.get('columnIdx')+'_t'+t._id) == 1){tags.push(t._id)}});
+
+
     if (tags.length > 0) {
       list_condition.tags = {$in: tags};
     }
@@ -46,9 +62,6 @@ Template.column.helpers({
     lists.forEach(function(list) {
       note_condition.list_id = list._id;
       var notes = Notes.find(note_condition, {sort:{order:1}});
-      /*if (notes.count() > 0 || (!list.checked && !instance.state.get('viewMode') == ViewMode.ARCHIVED)) {
-        data.push({list: list, note_list: notes})
-      }*/
       if (notes.count() > 0 || (!list.checked)) {
         data.push({list: list, note_list: notes})
       }
@@ -59,18 +72,18 @@ Template.column.helpers({
     const instance = Template.instance();
     var data = [];
     Tags.find({}).forEach(function(t){
-      data.push({_id: t._id, tag:t.name, active: instance.state.get(t._id)});
+      var hack = instance.state.get(t._id); // hack to force refresh
+      var local = 'Dashboard_c'+instance.state.get('columnIdx')+'_t'+t._id;
+      var tagActive = localStorage.getItem(local) == 1;
+      data.push({_id: t._id, tag:t.name, active: tagActive});
+      //data.push({_id: t._id, tag:t.name, active: instance.state.get(t._id)});
     });
     return data;
   },
   priority(){
     const instance = Template.instance();
     return instance.state.get('viewMode') == ViewMode.PRIORITY;
-  }/*,
-  archived(){
-    const instance = Template.instance();
-    return instance.state.get('viewMode') == ViewMode.ARCHIVED;
-  }*/
+  }
 });
 
 
@@ -83,16 +96,6 @@ Template.column.events({
     event.target.text.value = '';
   },
   'click .viewMode'(event, instance) {
-    /*
-    if (instance.state.get('viewMode') == ViewMode.ALL) {
-      instance.state.set('viewMode', ViewMode.PRIORITY);
-    } 
-    else if (instance.state.get('viewMode') == ViewMode.PRIORITY) {
-      instance.state.set('viewMode', ViewMode.ARCHIVED);
-    } 
-    else {
-      instance.state.set('viewMode', ViewMode.ALL);
-    }*/
     if (instance.state.get('viewMode') == ViewMode.ALL) {
       instance.state.set('viewMode', ViewMode.PRIORITY);
     } else {
@@ -102,7 +105,11 @@ Template.column.events({
   'click .tag'(event, instance) {
     event.preventDefault();
     const tag = $(event.target).data('tag');
-    instance.state.set(tag, !instance.state.get(tag));
+    //instance.state.set(tag, !instance.state.get(tag));
+    var local = 'Dashboard_c'+instance.state.get('columnIdx')+'_t'+tag;
+    var tagActive = localStorage.getItem(local) == 1;
+    localStorage.setItem(local, tagActive ? 0 : 1);
+    instance.state.set(tag, tagActive);
   }
 });
 

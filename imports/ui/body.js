@@ -12,30 +12,18 @@ this.ViewMode = {ALL:0, PRIORITY:1};
 
 Template.sticky.events({
   'click #stickynote'(event) {
-    var markdown = Notes.findOne({list_id: null}).markdown;
+    //var markdown = Notes.findOne({list_id: null}).markdown;
   },
   'keypress #stickynote': function(event) { 
     var note = $("#stickynote").val();
-    var sticky = Notes.findOne({list_id: null});
-    if (note !== sticky.markdown) {
-      Session.set('unsaved', true);
-    }
-    if (event.which == 92) {
-      if (note !== sticky.markdown) {
-        Notes.update(sticky._id, {$set: {markdown: note}});
-        Session.set('unsaved', false);
-      }
-    }
+    localStorage.setItem("Dashboard_local", note);
   }
 });
 
 Template.sticky.helpers({
   sticky(){
-    var sticky = Notes.findOne({list_id: null});
-    return sticky !== undefined ? sticky.markdown : "";
-  },
-  unsaved(){
-    return Session.get("unsaved");
+    var markdown = localStorage.getItem("Dashboard_local")
+    return markdown == null ? 'hello world' : markdown;
   }
 });
 
@@ -206,7 +194,6 @@ Template.manager.onCreated(function bodyOnCreated() {
 
 Template.editor.onCreated(function bodyOnCreated() {
   Session.set('editing', false);
-  Session.set('unsaved', false);
   this.state = new ReactiveDict();
 });
 

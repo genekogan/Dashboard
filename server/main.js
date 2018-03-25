@@ -10,13 +10,9 @@ Meteor.startup(() => {
 
 
 Meteor.startup(function () {
-  // Load future from fibers
   var Future = Npm.require("fibers/future");
-  // Load exec
   var exec = Npm.require("child_process").exec;
  
-  console.log("load server ability");
-
   // Server methods
   Meteor.methods({
     runCode: function (x, y) {

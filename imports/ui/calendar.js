@@ -14,7 +14,6 @@ Template.calendar.helpers({
     var today = new Date();
     today.setUTCHours(12,0,0);
     var date = new Date(today);
-    //date.setDate(date.getDate()-300);
     date.setDate(date.getDate()-14);
     while (date.getDay() != 1) {
       date.setDate(date.getDate()-1);
@@ -41,7 +40,6 @@ Template.calendar.helpers({
           }
         	day.location = travel.name;
           day.color_idx = "active"+color_idx;
-          //day.color_idx = "active"+travel.color_idx;
         });
         week.push(day);
         date.setDate(date.getDate()+1);
