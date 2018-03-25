@@ -115,4 +115,7 @@ def query_db(date_str):
 #query_db(date_str)
 
 
+
+
+print("THIS RAN!!! HOORAY")
 export_db()

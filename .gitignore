@@ -4,3 +4,4 @@ admin/backup
 admin/backup/*
 .meteor
 .git
+package-lock.json

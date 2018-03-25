@@ -7,7 +7,6 @@ import './column.js';
 import './body.html';
 
 this.DataType = {NOTE:0, LIST:1, TAG:2, EVENT:3, TRAVEL:4};
-//this.ViewMode = {ALL:0, PRIORITY:1, ARCHIVED:2};
 this.ViewMode = {ALL:0, PRIORITY:1};
 
 
@@ -64,17 +63,6 @@ function onLoad() {
   });
   viewCalendar();
   resizeWindow();
-
-  //console.log("find",Notes.find({}).count())
-  /*
-  if (Notes.find({list_id: null}).count() == 0) {
-    console.log("MAKE first one",Notes.find({list_id: null}).count()  )
-    notes.insert({text:'hello world', list_id: null, order: 0, createdAt: new Date()});
-  }
-  else {
-    console.log("alrady found")
-  }*/
-
 };
 
 this.setPreviewMode = function(preview) {
@@ -305,7 +293,7 @@ Template.manager.events({
     Events.find({}).forEach(function (e){Events.remove(e._id)});
     Travels.find({}).forEach(function (t){Travels.remove(t._id)});
   },
-  'click #dump_json'(event) {
+  'click #dump_json2'(event) {
     var json = {tags:[], lists:[], notes:[], events:[], travels:[]};
     Tags.find({}).forEach(function (t){json.tags.push(t);});
     Lists.find({}).forEach(function (l){json.lists.push(l);});
@@ -317,23 +305,18 @@ Template.manager.events({
     window.open(url, '_blank');
     window.focus();
   },
-  'click #load_json'(event) {
+  'click #dump_json'(event) { //#load_json
+    console.log("future loading versions")
+
+
+    Meteor.call('runCode', "value x", "value y", function (err, response) {
+      console.log(response);
+    });
+
+    console.log("did it work?")
 
   },
   'click #remove_checked'(event) {   
-    /*  
-    var date = new Date();
-    Lists.find({checked: true, archivedAt: undefined}).forEach(function (list){
-      Notes.find({list_id:list._id, archivedAt: undefined}).forEach(function (note){
-        Notes.update(note._id, { $set: { checked: true }});
-      });
-      Lists.update(list._id, { $set: { archivedAt: date }});
-    });
-    Notes.find({checked: true, archivedAt: undefined}).forEach(function (note){
-      Notes.update(note._id, { $set: { archivedAt: date }});
-    });
-    */
-
     Lists.find({checked: true}).forEach(function (list){
       Notes.find({list_id:list._id}).forEach(function (note){
         Notes.remove(note._id);
