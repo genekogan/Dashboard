@@ -10,7 +10,11 @@ Template.column.onCreated(function bodyOnCreated() {
   this.state = new ReactiveDict();
   this.active = {id:-1, dataType:null};
   const instance = Template.instance();
-  instance.state.set("viewMode", ViewMode.ALL);
+  
+  var viewMode = localStorage.getItem('Dashboard_c'+this.data.idx+'_viewMode') == 'priority' ? ViewMode.PRIORITY : ViewMode.ALL;
+
+
+  instance.state.set("viewMode", viewMode);
   instance.state.set("columnIdx", this.data.idx);
 
   console.log("found",Lists.find().count());
@@ -47,10 +51,8 @@ Template.column.helpers({
       //note_condition = {priority: true};
       note_condition = {priority: true, checked: {$in:[undefined, false]}};
     } 
-    var tags = [];
-    
-
     Tags.find({}, {sort:{order:1}}).forEach(function(t){if (instance.state.get(t._id)){}}); // hack to force refresh
+    var tags = [];
     Tags.find({}, {sort:{order:1}}).forEach(function(t){if (localStorage.getItem('Dashboard_c'+instance.state.get('columnIdx')+'_t'+t._id) == 1){tags.push(t._id)}});
 
 
@@ -98,8 +100,10 @@ Template.column.events({
   'click .viewMode'(event, instance) {
     if (instance.state.get('viewMode') == ViewMode.ALL) {
       instance.state.set('viewMode', ViewMode.PRIORITY);
+      localStorage.setItem('Dashboard_c'+instance.state.get('columnIdx')+'_viewMode', 'priority');
     } else {
       instance.state.set('viewMode', ViewMode.ALL);
+      localStorage.setItem('Dashboard_c'+instance.state.get('columnIdx')+'_viewMode', 'all');
     }
   },
   'click .tag'(event, instance) {

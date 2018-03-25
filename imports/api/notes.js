@@ -5,5 +5,3 @@ export const Notes = new Mongo.Collection('notes');
 export const Tags = new Mongo.Collection('tags');
 export const Events = new Mongo.Collection('events');
 export const Travels = new Mongo.Collection('travels');
-
-

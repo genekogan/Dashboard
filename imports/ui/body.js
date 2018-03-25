@@ -16,13 +16,13 @@ Template.sticky.events({
   },
   'keypress #stickynote': function(event) { 
     var note = $("#stickynote").val();
-    localStorage.setItem("Dashboard_local", note);
+    localStorage.setItem("Dashboard_sticky", note);
   }
 });
 
 Template.sticky.helpers({
   sticky(){
-    var markdown = localStorage.getItem("Dashboard_local")
+    var markdown = localStorage.getItem("Dashboard_sticky")
     return markdown == null ? 'hello world' : markdown;
   }
 });
@@ -280,27 +280,141 @@ Template.manager.events({
     Events.find({}).forEach(function (e){Events.remove(e._id)});
     Travels.find({}).forEach(function (t){Travels.remove(t._id)});
   },
-  'click #dump_json2'(event) {
-    var json = {tags:[], lists:[], notes:[], events:[], travels:[]};
-    Tags.find({}).forEach(function (t){json.tags.push(t);});
-    Lists.find({}).forEach(function (l){json.lists.push(l);});
-    Notes.find({}).forEach(function (t){json.notes.push(t);});
-    Events.find({}).forEach(function (e){json.events.push(e);});
-    Travels.find({}).forEach(function (t){json.travels.push(t);});
-    var data = JSON.stringify(json);
-    var url = 'data:text/json;charset=utf8,'+encodeURIComponent(data);
-    window.open(url, '_blank');
-    window.focus();
-  },
   'click #dump_json'(event) { //#load_json
     console.log("future loading versions")
 
 
-    Meteor.call('runCode', "value x", "value y", function (err, response) {
+
+    var sticky = localStorage.getItem("Dashboard_sticky");
+    //console.log(sticky)
+
+    
+    Meteor.call('exportDb', sticky, function (err, response) {
       console.log(response);
     });
 
-    console.log("did it work?")
+
+
+
+
+
+  },
+  'click #revert'(event) { //#load_json
+    console.log("future loading versions")
+
+
+    ////////////////////////////////////////
+    ////////////////
+    ////////
+    ////////    TODO:  make it save latest before reverting
+////////
+
+
+    
+
+  /*
+    Meteor.call('importDb', function (err, response) {
+      console.log(response);
+    });
+*/
+    
+    var query_date = new Date('3/23/2018');
+
+
+    var query_date2 = prompt("Query which date", "3/23/2018");
+
+    if (query_date2 != null) {
+      query_date = new Date(query_date2);
+    }
+
+    console.log("query is ",query_date)
+
+    
+
+    Meteor.call('getCommitLog', function (err, response) {
+      query_date.setSeconds(86399);
+      var best_date = new Date('1/1/2001');
+      var query_hash = null;
+      var re = /commit (.+)\nAuthor: (.+)+\nDate:   (.+)+/g
+
+
+      response = `
+
+commit 12ccdd498e66cd3533e1c6dddd86f79ef81e02c1
+Author: Gene Kogan <kogan.gene@gmail.com>
+Date:   Sun Mar 25 22:57:23 2018 +0200
+
+    Sun Mar 25 2018 22:57:23 GMT+0200 (CEST)
+
+commit 2363370b70b513fa4e08d8899eef63f00b0310de
+Author: Gene Kogan <kogan.gene@gmail.com>
+Date:   Sun Mar 24 22:57:13 2018 +0200
+
+    Sun Mar 24 2018 22:57:13 GMT+0200 (CEST)
+
+commit 53d3dbdee07a57b143e3c50648ba0de624d9d851
+Author: Gene Kogan <kogan.gene@gmail.com>
+Date:   Sun Mar 23 22:56:40 2018 +0200
+
+    Sun Mar 23 2018 22:56:40 GMT+0200 (CEST)
+
+commit be11f82a8ef4aac8b248342708e5682a57573402
+Author: Gene Kogan <kogan.gene@gmail.com>
+Date:   Sun Mar 22 22:56:26 2018 +0200
+
+    Sun Mar 22 2018 22:56:26 GMT+0200 (CEST)
+
+commit 4f8844cfae67c2f02f958d18f565abc78f5993ee
+Author: Gene Kogan <kogan.gene@gmail.com>
+Date:   Sun Mar 21 22:56:11 2018 +0200
+
+    Sun Mar 21 2018 22:56:11 GMT+0200 (CEST)
+
+commit 356808c2f5c2554a508463b05d07830fa9a3d801
+Author: Gene Kogan <kogan.gene@gmail.com>
+Date:   Sun Mar 20 22:55:47 2018 +0200
+
+    Sun Mar 20 2018 22:55:47 GMT+0200 (CEST)
+
+commit ea4aa3f02d0526bebcc03e10e9b6f623a07a75cb
+Author: Gene Kogan <kogan.gene@gmail.com>
+Date:   Sun Mar 19 22:55:18 2018 +0200
+
+    Sun Mar 19 2018 22:55:18 GMT+0200 (CEST)
+
+`;
+
+
+      do {
+        var m = re.exec(response);
+        if (m) {
+          var hash = m[1];
+          var date = new Date(m[3]);
+          var isBefore = date < query_date;
+          console.log(hash, date, isBefore);
+          if (isBefore && date > best_date) {
+            best_date = date;
+            query_hash = hash;
+          }
+        }
+      } while (m);
+
+      console.log("found best date",best_date,query_hash)
+      if (query_hash != null) {
+        Meteor.call('importDb', query_hash, function (err, response) {
+          console.log(response);
+        });
+      } else {
+        alert("no commit found before "+query_date);
+        return;
+      }
+    });
+
+
+
+
+
+
 
   },
   'click #remove_checked'(event) {   
