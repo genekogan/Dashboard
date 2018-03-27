@@ -1,7 +1,7 @@
 node_modules/
 public/
-admin/backup
-admin/backup/*
+private/backup
+private/backup/*
 .meteor
 .git
 package-lock.json
