@@ -1,17 +1,22 @@
 body {
   font-family: "Geneva";
   font-size: 12px;
-  background-color: #999;
   padding: 0px;
   margin: 0px;
   overflow-y: hidden;
   overflow-x: hidden;
   white-space: nowrap;
 }
+#content {
+  background-color: #999;
+}
 #navbar {
   width: 100%;
   background-color: #444;
   padding: 2px;
+}
+#navbar.archive {
+  background-color: #722;
 }
 .navbutton  {
   background-color: #999;
@@ -34,14 +39,19 @@ body {
   padding-right: 3px;
   margin-right:8px;
 }
-#versionStatus{
+#versionStatus, #versionWhich{
   background-color:#daa;
   color: #111;
-  float:right;
   padding-left: 3px;
   padding-right: 3px;
-  margin-right: 32px;
 }
+#versionStatus{
+  
+}
+#versionWhich{
+  margin-left: 15px;
+}
+
 #versionStatus:hover {
   background-color: #f4ad42;
   cursor: pointer;

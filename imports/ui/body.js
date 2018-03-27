@@ -6,39 +6,29 @@ import './calendar.js';
 import './column.js';
 import './body.html';
 
-
 // constants
-// const checkCommitInterval = 1000 * 60 * 15;   // 15 minutes
-// const maxBackupLag = 1000 * 60 * 60 * 24;   // 24 hours
-const checkCommitInterval = 1000 * 60 * 1;   // 15 minutes
-const maxBackupLag = 1000 * 60 * 4;   // 24 hours
+const checkCommitInterval = 1000 * 60 * 15;   // 15 minutes
+const maxBackupLag = 1000 * 60 * 60 * 24;   // 24 hours
+
 
 this.DataType = {NOTE:0, LIST:1, TAG:2, EVENT:3, TRAVEL:4};
 this.ViewMode = {ALL:0, PRIORITY:1};
-
-Template.sticky.events({
-  'click #stickynote'(event) {
-    //var markdown = Notes.findOne({list_id: null}).markdown;
-  },
-  'keypress #stickynote': function(event) { 
-    var note = $("#stickynote").val();
-    localStorage.setItem("Dashboard_sticky", note);
-  }
-});
-
-Template.sticky.helpers({
-  sticky(){
-    var markdown = localStorage.getItem("Dashboard_sticky")
-    return markdown == null ? 'hello world' : markdown;
-  }
-});
-
 
 function resizeWindow() {
   $(".column").css("height", (window.innerHeight-50)+"px");
   $("#console").css("height", (window.innerHeight-64)+"px");
   $(".CodeMirror").css("height", (window.innerHeight-135)+"px");
-}
+};
+
+function updateSticky() {
+  var note = $("#stickynote").val();
+  localStorage.setItem("Dashboard_sticky", note);
+};
+
+function setSticky(sticky) {
+  $("#stickynote").val(sticky);
+  localStorage.setItem("Dashboard_sticky", sticky);
+};
 
 function updateLastBackupStr() {
   var current = new Date();
@@ -65,24 +55,22 @@ function getMostRecentCommit() {
       Session.set('lastBackup', new Date(m[3]));
       updateLastBackupStr();
     } else {
-      console.log("Warning: no backup commits found.")
+      console.log("Warning: no backup commits found (ignore if this is your first session).")
     }
   });
 };
 
-function backupDb() {
+function backupDb(callback) {
   if (Session.get("isPreviousVersion") == true) {
     console.log('No backing up while in previous version');
-    return false;
+    if (callback != null) return callback(false);
   }
+  updateSticky(); // just to make sure last keystroke captured
   var sticky = localStorage.getItem("Dashboard_sticky"); 
   Meteor.call('exportDb', sticky, function (err, response) {
-    console.log(response)
-    //getMostRecentCommit();  
     Meteor.call('commitDb', function (err, response2) {
-      console.log(response2)
       getMostRecentCommit();
-      return true;
+      if (callback != null) return callback(true);
     });
   });
 };
@@ -98,16 +86,16 @@ function revertToMostRecent() {
         if (err3) { console.log("Error: ",err3); return; }
         localStorage.setItem("Dashboard_IsPreviousVersion", false);
         Session.set("isPreviousVersion", false);
+        localStorage.setItem("Dashboard_PreviousVersion", 'current');
+        Session.set("PreviousVersion", 'current');
       });
     });
   });
 };
 
 function checkLastCommit() {
-  console.log("check it!")
   var currentTime = new Date();
   if (Math.floor(currentTime / maxBackupLag) > Math.floor(Session.get('lastBackup') / maxBackupLag)) {
-    console.log("YES LETS DO IT")
     backupDb();
   } else {
     updateLastBackupStr();
@@ -130,7 +118,9 @@ function onLoad() {
     }
   });
   Session.set('lastBackup', new Date("1/1/2000"));
-  Session.set("isPreviousVersion", localStorage.getItem("Dashboard_IsPreviousVersion")=='true');
+  Session.set('lastBackupStr', 'never');
+  Session.set("isPreviousVersion", localStorage.getItem("Dashboard_IsPreviousVersion")=='true');  
+  Session.set("PreviousVersion", localStorage.getItem('Dashboard_PreviousVersion'));
   getMostRecentCommit();
   setInterval(checkLastCommit, checkCommitInterval); 
   viewCalendar();
@@ -247,6 +237,28 @@ this.hideModal = function() {
   $('.modal').css("display", "none");
 };
 
+Template.sticky.events({
+  'click #stickynote'(event) {
+    //var markdown = Notes.findOne({list_id: null}).markdown;
+  },
+  'keypress #stickynote': function(event) { 
+    setTimeout(updateSticky, 10); // wait a few ms for the DOM to update
+  }
+});
+
+
+Template.sticky.helpers({
+  sticky(){
+    var markdown = localStorage.getItem("Dashboard_sticky");
+    if (markdown != null) {return markdown;}
+    Meteor.call('getSticky', function (err, res) {
+      if (err) { console.log("Error: ", err); return 'hello world'; }
+      localStorage.setItem("Dashboard_sticky", res);
+      return markdown;
+    });
+  }
+});
+
 Template.registerHelper('formatId', function(data) {
   return (data && data._str) || data;
 });
@@ -311,6 +323,9 @@ Template.navbar.helpers({
   },
   isPrevVersion2() {
     return Session.get("isPreviousVersion") ? 'yes' : 'no';
+  },
+  whichVersion() {
+    return Session.get("PreviousVersion");
   }
 });
 
@@ -328,6 +343,9 @@ Template.manager.helpers({
 Template.body.helpers({
   columns(){
     return Columns.find({});
+  },
+  isPrevVersion() {
+    return Session.get("isPreviousVersion");
   }
 });
 
@@ -380,40 +398,22 @@ Template.manager.events({
     Travels.find({}).forEach(function (t){Travels.remove(t._id)});
   },
   'click #dump_json'(event) { 
-    var result = backupDb();
-    if (!result) {
-      alert('Something went wrong exporting DB');
-    }
+    backupDb(function (result){
+      if (!result) {alert('Something went wrong exporting DB');}      
+    });
   },
   'click #revert'(event) { 
-    console.log("future loading versions")
+//    alert('this is experimental. backup db and test it against corruption + edge cases.');
+//    return;
 
-
-
-
-
-    var query_date = new Date('3/15/2018');
-
-
-    var query_date2 = prompt("Query which date", "3/15/2018");
-
-    if (query_date2 != null) {
-      query_date = new Date(query_date2);
+    var query_date = prompt("Query which date?", "3/15/2018");
+    if (query_date == null) {
+      console.log("query date not recognized. skipping...");
+      return;
     }
 
-    console.log("query is ",query_date)
-
-
-
-
-
-
-
-
-
-  
-
     Meteor.call('getCommitLog', function (err, response) {
+      query_date = new Date(query_date);
       query_date.setSeconds(86399);
       var best_date = new Date('1/1/2000');
       var query_hash = null;
@@ -422,160 +422,59 @@ Template.manager.events({
 
       response = `
 
-commit 0b2d13d3a89f0cd259a34681b8bdd4561c8b1167
+
+commit 3136e5130d59701440194ef98dd40aa5d437cdc6
 Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 26 17:40:09 2018 +0200
+Date:   Tue Mar 27 17:47:32 2018 +0200
 
-    Mon Mar 26 2018 17:40:09 GMT+0200 (CEST)
+    Tue Mar 27 2018 17:47:32 GMT+0200 (CEST)
 
-commit ae09ec281832e8141fabd995e6dfc3feffd6db80
+commit 36c5056a8ccdcd1309a826e67d75d338b368bdf9
 Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 25 17:36:03 2018 +0200
+Date:   Tue Mar 26 17:45:28 2018 +0200
 
-    Mon Mar 25 2018 17:36:03 GMT+0200 (CEST)
+    Tue Mar 26 2018 17:45:28 GMT+0200 (CEST)
 
-commit bbd62d805c2812933530b5359410fa74dcc9ff54
+commit 967824b012e79dc42490c5639dd0dd45fd411151
 Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 24 17:25:10 2018 +0200
+Date:   Tue Mar 25 17:44:00 2018 +0200
 
-    Mon Mar 24 2018 17:25:10 GMT+0200 (CEST)
+    Tue Mar 25 2018 17:44:00 GMT+0200 (CEST)
 
-commit 81980ee421978e756aef7e3d8dc4e5024c5a53ce
+commit 2ae9dce1df69a0da5bef634ececf2845a1846ba4
 Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 23 16:46:39 2018 +0200
+Date:   Tue Mar 24 17:42:27 2018 +0200
 
-    Mon Mar 23 2018 16:46:39 GMT+0200 (CEST)
+    Tue Mar 24 2018 17:42:27 GMT+0200 (CEST)
 
-commit 0b2d13d3a89f0cd259a34681b8bdd4561c8b1167
+commit 70bfd0c4453a7fe382dcdbb09ccaf40a23329474
 Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 22 17:40:09 2018 +0200
+Date:   Tue Mar 23 17:41:09 2018 +0200
 
-    Mon Mar 22 2018 17:40:09 GMT+0200 (CEST)
+    Tue Mar 23 2018 17:41:09 GMT+0200 (CEST)
 
-commit ae09ec281832e8141fabd995e6dfc3feffd6db80
+commit 9c4c36f3f215571be9e4c97a2213193d89558fa4
 Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 21 17:36:03 2018 +0200
+Date:   Tue Mar 22 17:40:32 2018 +0200
 
-    Mon Mar 21 2018 17:36:03 GMT+0200 (CEST)
+    Tue Mar 22 2018 17:40:32 GMT+0200 (CEST)
 
-commit bbd62d805c2812933530b5359410fa74dcc9ff54
+commit df791f3c67ad83c1d9e05b54127c051d19e106b0
 Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 20 17:25:10 2018 +0200
+Date:   Tue Mar 21 17:39:00 2018 +0200
 
-    Mon Mar 20 2018 17:25:10 GMT+0200 (CEST)
+    Tue Mar 21 2018 17:39:00 GMT+0200 (CEST)
 
-commit 81980ee421978e756aef7e3d8dc4e5024c5a53ce
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 19 16:46:39 2018 +0200
-
-    Mon Mar 19 2018 16:46:39 GMT+0200 (CEST)
-
-commit 72e80d29f14797b4a75fbdf6df99f3c4d8838960
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 18 16:31:45 2018 +0200
-
-    Mon Mar 18 2018 16:31:45 GMT+0200 (CEST)
-
-commit 18036341faaefacfb0351b24bc6002afffad9d94
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 17 16:10:38 2018 +0200
-
-    Mon Mar 17 2018 16:10:38 GMT+0200 (CEST)
-
-commit 0b2d13d3a89f0cd259a34681b8bdd4561c8b1167
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 16 17:40:09 2018 +0200
-
-    Mon Mar 16 2018 17:40:09 GMT+0200 (CEST)
-
-commit ae09ec281832e8141fabd995e6dfc3feffd6db80
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 15 17:36:03 2018 +0200
-
-    Mon Mar 15 2018 17:36:03 GMT+0200 (CEST)
-
-commit bbd62d805c2812933530b5359410fa74dcc9ff54
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 14 17:25:10 2018 +0200
-
-    Mon Mar 14 2018 17:25:10 GMT+0200 (CEST)
-
-commit 81980ee421978e756aef7e3d8dc4e5024c5a53ce
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 13 16:46:39 2018 +0200
-
-    Mon Mar 13 2018 16:46:39 GMT+0200 (CEST)
-
-commit 72e80d29f14797b4a75fbdf6df99f3c4d8838960
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 12 16:31:45 2018 +0200
-
-    Mon Mar 12 2018 16:31:45 GMT+0200 (CEST)
-
-commit 18036341faaefacfb0351b24bc6002afffad9d94
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 11 16:10:38 2018 +0200
-
-    Mon Mar 11 2018 16:10:38 GMT+0200 (CEST)
-
-commit 025c48209a32bb6b3fabee6c7ee1c21e5b04eca0
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 10 16:00:16 2018 +0200
-
-    Mon Mar 10 2018 16:00:16 GMT+0200 (CEST)
-
-commit ff1d4e5871d77ed269c0bcb2b68a3c189c4cbccc
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 9 15:24:50 2018 +0200
-
-    Mon Mar 9 2018 15:24:50 GMT+0200 (CEST)
-
-commit 87387c9033f36e3609073c8cfc96312138dae735
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 8 14:55:44 2018 +0200
-
-    Mon Mar 8 2018 14:55:44 GMT+0200 (CEST)
-
-commit 57a7997e19a399c59f4b357bcedf29eb1cb32907
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 7 14:32:53 2018 +0200
-
-    Mon Mar 7 2018 14:32:53 GMT+0200 (CEST)
-
-commit 137b96bd18c1dd5b8e17aac8f84961ec79302d46
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 6 14:31:03 2018 +0200
-
-    Mon Mar 6 2018 14:31:03 GMT+0200 (CEST)
-
-commit 14d4c6cf66d590a479f7d3eba73cc419ad63b20f
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 5 14:30:43 2018 +0200
-
-    Mon Mar 5 2018 14:30:43 GMT+0200 (CEST)
-
-commit cf7bb7251f5e926455a59e328d635a96529197ae
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 4 14:23:50 2018 +0200
-
-    Mon Mar 4 2018 14:23:50 GMT+0200 (CEST)
-
-commit 34687029db77f164515c0e0d58b480db4d949338
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Mon Mar 3 13:29:43 2018 +0200
-
-    Mon Mar 3 2018 13:25:13 GMT+0200 (CEST)
 
 `;
 
-
+      // find matching commit hash
       do {
         var m = re.exec(response);
         if (m) {
           var hash = m[1];
           var date = new Date(m[3]);
           var isBefore = date < query_date;
-          console.log(hash, date, isBefore);
           if (isBefore && date > best_date) {
             best_date = date;
             query_hash = hash;
@@ -583,64 +482,31 @@ Date:   Mon Mar 3 13:29:43 2018 +0200
         }
       } while (m);
 
-
-
-      //revert db(has), get sticky + import db, revertdblast
-
-
-      console.log("found best date",best_date,query_hash)
       if (query_hash == null) {
         alert("no commit found before "+query_date);
         return;
       }
 
-
-      
-
-
-
-      // have to export before doing this
-
-      Meteor.call('revertDb', query_hash, function (err, res) {
-        if (err) { console.log("Error: ",err); return }
-        Meteor.call('getSticky', function (err2, res2) {
-          if (err2) { console.log("Error: ",err2); return; }
-          localStorage.setItem("Dashboard_sticky", res2);
-          $("#stickynote").val(localStorage.getItem("Dashboard_sticky"));
-          Meteor.call('importDb', function (err3, res3) {
-            if (err3) { console.log("Error: ",err3); return; }
-            Meteor.call('revertDbLast', function (err4, res4) {
-              if (err4) { console.log("Error: ",err4); return; }
-              console.log("REVERTED TO",query_hash)
-
-              // HOW TO MANAGE THIS
-              //Session.set('IsPreviousVersion', true);
-              localStorage.setItem("Dashboard_IsPreviousVersion", true);
-              Session.set("isPreviousVersion", true);
-
+      backupDb(function (backupResult){
+        Meteor.call('revertDb', query_hash, function (err, res) {
+          if (err) { console.log("Error: ",err); return }
+          Meteor.call('importDb', function (err2, res2) {
+            if (err2) { console.log("Error: ",err2); return; }
+            Meteor.call('getSticky', function (err3, res3) {
+              if (err3) { console.log("Error: ",err3); return; }
+              setSticky(res3);  
+              Meteor.call('revertDbLast', function (err4, res4) {
+                if (err4) { console.log("Error: ",err4); return; }
+                localStorage.setItem("Dashboard_IsPreviousVersion", true);
+                Session.set("isPreviousVersion", true);
+                localStorage.setItem("Dashboard_PreviousVersion", (query_date.getMonth() + 1) + '/' + query_date.getDate() + '/' +  query_date.getFullYear());
+                Session.set("PreviousVersion", (query_date.getMonth() + 1) + '/' + query_date.getDate() + '/' +  query_date.getFullYear());
+              });
             });
           });
         });
       });
-
-
-        // Meteor.call('importDb', query_hash, function (err, response) {
-        //   console.log(response);
-        // });
-      
     });
-
-
-
-
-
-
-
-
-
-
-
-
   },
   'click #remove_checked'(event) {   
     Lists.find({checked: true}).forEach(function (list){
@@ -700,6 +566,7 @@ Date:   Mon Mar 3 13:29:43 2018 +0200
 
 Template.editor.events({
   'submit .editorname-form'(event) {
+    console.log("submit", event.target.text.value)
     event.preventDefault();
     if (active.dataType == DataType.LIST) {
       Lists.update(active.id, {$set: { name: event.target.text.value }});
@@ -707,6 +574,9 @@ Template.editor.events({
       Notes.update(active.id, {$set: { text: event.target.text.value }});
     } else if (active.dataType == DataType.EVENT) {
       Events.update(active.id, {$set: { name: event.target.text.value }});
+      viewCalendar();
+    } else if (active.dataType == DataType.TRAVEL) {
+      Travels.update(active.id, {$set: { name: event.target.text.value }});
       viewCalendar();
     }
   },
@@ -719,7 +589,7 @@ Template.editor.events({
     } else if (active.dataType == DataType.EVENT) {
       Events.update(active.id, {$set: { external_link: event.target.text.value }});
       viewCalendar();
-    }
+    } 
   },
   'submit .editordate-form'(event) {
     event.preventDefault();

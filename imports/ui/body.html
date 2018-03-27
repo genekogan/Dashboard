@@ -1,8 +1,8 @@
 <body>
 
   <div id="content">
-    
-    <div id="navbar">
+
+    <div id="navbar" class="{{#if isPrevVersion}}archive{{/if}}">
       {{> navbar}}
     </div>
 
@@ -42,8 +42,11 @@
   <span id="viewNewTag" class="navbutton">new tag</span>
   <span id="viewNewEvent" class="navbutton">new event</span>
   <span id="viewCalendar" class="navbutton">calendar</span>
-  <span id="lastUpdate">Backed up: {{lastBackup}} (last is {{isPrevVersion2}})</span>
-  {{#if isPrevVersion}}<span id="versionStatus">Revert to latest</span>{{/if}}
+  <span id="lastUpdate">Backed up: {{lastBackup}}</span>
+  {{#if isPrevVersion}}
+  <span id="versionWhich">Archive from {{whichVersion}}</span>
+  <span id="versionStatus">Revert to latest</span>
+  {{/if}}
 
 </template>
 

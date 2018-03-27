@@ -81,7 +81,6 @@ Template.column.events({
   'click .tag'(event, instance) {
     event.preventDefault();
     const tag = $(event.target).data('tag');
-    //instance.state.set(tag, !instance.state.get(tag));
     var local = 'Dashboard_c'+instance.state.get('columnIdx')+'_t'+tag;
     var tagActive = localStorage.getItem(local) == 1;
     localStorage.setItem(local, tagActive ? 0 : 1);
