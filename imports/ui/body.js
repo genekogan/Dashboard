@@ -403,8 +403,8 @@ Template.manager.events({
     });
   },
   'click #revert'(event) { 
-//    alert('this is experimental. backup db and test it against corruption + edge cases.');
-//    return;
+    alert('this is experimental. first backup db and test it against corruption + edge cases, remove this check on body.js, and proceed with caution :)');
+    return;
 
     var query_date = prompt("Query which date?", "3/15/2018");
     if (query_date == null) {
@@ -418,55 +418,6 @@ Template.manager.events({
       var best_date = new Date('1/1/2000');
       var query_hash = null;
       var re = /commit (.+)\nAuthor: (.+)+\nDate:   (.+)+/g
-
-
-      response = `
-
-
-commit 3136e5130d59701440194ef98dd40aa5d437cdc6
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Tue Mar 27 17:47:32 2018 +0200
-
-    Tue Mar 27 2018 17:47:32 GMT+0200 (CEST)
-
-commit 36c5056a8ccdcd1309a826e67d75d338b368bdf9
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Tue Mar 26 17:45:28 2018 +0200
-
-    Tue Mar 26 2018 17:45:28 GMT+0200 (CEST)
-
-commit 967824b012e79dc42490c5639dd0dd45fd411151
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Tue Mar 25 17:44:00 2018 +0200
-
-    Tue Mar 25 2018 17:44:00 GMT+0200 (CEST)
-
-commit 2ae9dce1df69a0da5bef634ececf2845a1846ba4
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Tue Mar 24 17:42:27 2018 +0200
-
-    Tue Mar 24 2018 17:42:27 GMT+0200 (CEST)
-
-commit 70bfd0c4453a7fe382dcdbb09ccaf40a23329474
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Tue Mar 23 17:41:09 2018 +0200
-
-    Tue Mar 23 2018 17:41:09 GMT+0200 (CEST)
-
-commit 9c4c36f3f215571be9e4c97a2213193d89558fa4
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Tue Mar 22 17:40:32 2018 +0200
-
-    Tue Mar 22 2018 17:40:32 GMT+0200 (CEST)
-
-commit df791f3c67ad83c1d9e05b54127c051d19e106b0
-Author: Gene Kogan <kogan.gene@gmail.com>
-Date:   Tue Mar 21 17:39:00 2018 +0200
-
-    Tue Mar 21 2018 17:39:00 GMT+0200 (CEST)
-
-
-`;
 
       // find matching commit hash
       do {

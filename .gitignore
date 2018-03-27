@@ -1,7 +1,1 @@
 node_modules/
-public/
-private/backup
-private/backup/*
-.meteor
-.git
-package-lock.json
