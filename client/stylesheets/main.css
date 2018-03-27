@@ -26,6 +26,29 @@ body {
 .navbutton:active {
   background-color: #ccc;
 }
+#lastUpdate {
+  background-color:#ddd;
+  color: #111;
+  float:right;
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-right:8px;
+}
+#versionStatus{
+  background-color:#daa;
+  color: #111;
+  float:right;
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-right: 32px;
+}
+#versionStatus:hover {
+  background-color: #f4ad42;
+  cursor: pointer;
+}
+#versionStatus:active {
+  background-color: #ccc;
+}
 #console {
 	vertical-align: top;
 	background-color: #fff	;

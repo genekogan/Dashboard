@@ -10,35 +10,9 @@ Template.column.onCreated(function bodyOnCreated() {
   this.state = new ReactiveDict();
   this.active = {id:-1, dataType:null};
   const instance = Template.instance();
-  
   var viewMode = localStorage.getItem('Dashboard_c'+this.data.idx+'_viewMode') == 'priority' ? ViewMode.PRIORITY : ViewMode.ALL;
-
-
   instance.state.set("viewMode", viewMode);
   instance.state.set("columnIdx", this.data.idx);
-
-  console.log("found",Lists.find().count());
-
-  console.log("HI ",this.data)
-
-  // if (this.data.idx==0) {
-  //   instance.state.set("2APyZ2nSHkYoYXBKD", true);
-  // } else if (this.data.idx==1) {
-  //   instance.state.set("J8BRZCr3MG87YXTKi", true);
-  // } else if (this.data.idx==2) {
-  //   instance.state.set("qQoDYzj3srMQgW7cb", true);
-//  }
-
-/*
-  if (this.data.idx==0) {
-    instance.state.set("todo", true);
-  } else if (this.data.idx==1) {
-    instance.state.set("work", true);
-  } else if (this.data.idx==2) {
-    instance.state.set("write", true);
- }
- */
-
 });
 
 
@@ -54,8 +28,6 @@ Template.column.helpers({
     Tags.find({}, {sort:{order:1}}).forEach(function(t){if (instance.state.get(t._id)){}}); // hack to force refresh
     var tags = [];
     Tags.find({}, {sort:{order:1}}).forEach(function(t){if (localStorage.getItem('Dashboard_c'+instance.state.get('columnIdx')+'_t'+t._id) == 1){tags.push(t._id)}});
-
-
     if (tags.length > 0) {
       list_condition.tags = {$in: tags};
     }
