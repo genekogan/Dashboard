@@ -7,12 +7,14 @@ import './column.js';
 import './body.html';
 
 // constants
-const checkCommitInterval = 1000 * 60 * 15;   // 15 minutes
+const checkCommitInterval = 1000 * 60 * 30;   // 15 minutes
 const maxBackupLag = 1000 * 60 * 60 * 24;   // 24 hours
 
 
 this.DataType = {NOTE:0, LIST:1, TAG:2, EVENT:3, TRAVEL:4};
 this.ViewMode = {ALL:0, PRIORITY:1};
+var toUpdateSticky = false;
+
 
 function resizeWindow() {
   $(".column").css("height", (window.innerHeight-50)+"px");
@@ -21,6 +23,7 @@ function resizeWindow() {
 };
 
 function updateSticky() {
+  toUpdateSticky = false;
   var note = $("#stickynote").val();
   localStorage.setItem("Dashboard_sticky", note);
 };
@@ -39,11 +42,11 @@ function updateLastBackupStr() {
   } else if (diff < 2.0) {
     Session.set('lastBackupStr', '1 hour ago');
   } else if (diff < 24.0) {
-    Session.set('lastBackupStr', (Math.round(diff * 100) / 100)+' hours ago');
+    Session.set('lastBackupStr', Math.round(diff)+' hours ago');
   } else if (diff < 48.0) {
     Session.set('lastBackupStr', '1 day ago');
   } else {
-    Session.set('lastBackupStr', (Math.round(diff / 24.0))+' days ago');
+    Session.set('lastBackupStr', Math.round(diff / 24.0)+' days ago');
   }
 };
 
@@ -123,6 +126,7 @@ function onLoad() {
   Session.set("PreviousVersion", localStorage.getItem('Dashboard_PreviousVersion'));
   getMostRecentCommit();
   setInterval(checkLastCommit, checkCommitInterval); 
+  checkLastCommit();
   viewCalendar();
   resizeWindow();
 };
@@ -242,7 +246,10 @@ Template.sticky.events({
     //var markdown = Notes.findOne({list_id: null}).markdown;
   },
   'keypress #stickynote': function(event) { 
-    setTimeout(updateSticky, 10); // wait a few ms for the DOM to update
+    if (!toUpdateSticky) {
+      toUpdateSticky = true;
+      setTimeout(updateSticky, 10000); // wait a sec to update from keystroke
+    } 
   }
 });
 
@@ -321,9 +328,9 @@ Template.navbar.helpers({
   isPrevVersion() {
     return Session.get("isPreviousVersion");
   },
-  isPrevVersion2() {
-    return Session.get("isPreviousVersion") ? 'yes' : 'no';
-  },
+  // isPrevVersion2() {
+  //   return Session.get("isPreviousVersion") ? 'yes' : 'no';
+  // },
   whichVersion() {
     return Session.get("PreviousVersion");
   }

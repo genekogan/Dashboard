@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import '../imports/api/notes.js';
 
 
-const root = '../../../../..';   //'/Users/gene/NewDash/Dashboard'
+const root = '../../../../..'; 
 const backup_dir = 'private/backup';
 
 
@@ -25,7 +25,7 @@ Meteor.startup(function () {
 		return future.wait();
   };
 
-
+  // Server methods
   Meteor.methods({
 
   	getCommitLog: function () {
