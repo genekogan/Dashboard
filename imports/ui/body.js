@@ -7,7 +7,7 @@ import './column.js';
 import './body.html';
 
 // constants
-const checkCommitInterval = 1000 * 60 * 30;   // 15 minutes
+const checkCommitInterval = 1000 * 60 * 30;   // 30 minutes
 const maxBackupLag = 1000 * 60 * 60 * 24;   // 24 hours
 
 
@@ -50,7 +50,7 @@ function updateLastBackupStr() {
   }
 };
 
-function getMostRecentCommit() {
+function getMostRecentCommit(callback) {
   Meteor.call('getCommitLog', function (err, response) {
     var re = /commit (.+)\nAuthor: (.+)+\nDate:   (.+)+/g
     var m = re.exec(response);
@@ -60,6 +60,7 @@ function getMostRecentCommit() {
     } else {
       console.log("Warning: no backup commits found (ignore if this is your first session).")
     }
+    if (callback) callback();
   });
 };
 
@@ -72,6 +73,7 @@ function backupDb(callback) {
   var sticky = localStorage.getItem("Dashboard_sticky"); 
   Meteor.call('exportDb', sticky, function (err, response) {
     Meteor.call('commitDb', function (err, response2) {
+      console.log("Backed up DB", new Date());
       getMostRecentCommit();
       if (callback != null) return callback(true);
     });
@@ -124,9 +126,8 @@ function onLoad() {
   Session.set('lastBackupStr', 'never');
   Session.set("isPreviousVersion", localStorage.getItem("Dashboard_IsPreviousVersion")=='true');  
   Session.set("PreviousVersion", localStorage.getItem('Dashboard_PreviousVersion'));
-  getMostRecentCommit();
   setInterval(checkLastCommit, checkCommitInterval); 
-  checkLastCommit();
+  getMostRecentCommit(checkLastCommit);
   viewCalendar();
   resizeWindow();
 };
