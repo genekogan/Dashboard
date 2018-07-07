@@ -59,7 +59,7 @@ Template.calendar.events({
     viewNewEvent();
   },
   'click .topbar'(event) {
-    var travel = Travels.findOne({date1 : {$lte:new Date(this.date)}, date2: {$gte:new Date(this.date)}});
+    var travel = Travels.findOne({date1 : {$lte:new Date(this.date)}, date2: {$gte:new Date(this.date-60*60*24*1000)}});
     if (travel !== undefined) {
       active = {id: travel._id, dataType: DataType.TRAVEL};
       setMarkdown(travel, DataType.TRAVEL);

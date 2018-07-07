@@ -412,7 +412,7 @@ Template.manager.events({
   },
   'click #revert'(event) { 
     alert('this is experimental. first backup db and test it against corruption + edge cases, remove this check on body.js, and proceed with caution :)');
-    return;
+    //return;
 
     var query_date = prompt("Query which date?", "3/15/2018");
     if (query_date == null) {

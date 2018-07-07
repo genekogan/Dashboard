@@ -10,8 +10,8 @@ Meteor.startup(function () {
   var Future = Npm.require("fibers/future");
   var exec = Npm.require("child_process").exec;
  
- 	// which port is Mongo on
-	const mongoPort = process.env.MONGO_URL.replace('mongodb://127.0.0.1:','').replace('/meteor', '');
+  // which port is Mongo on
+  const mongoPort = process.env.MONGO_URL.replace('mongodb://127.0.0.1:','').replace('/meteor', '');
   
   function serverCommand(command) {
   	var future = new Future();
