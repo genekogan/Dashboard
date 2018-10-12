@@ -39,11 +39,11 @@ Meteor.startup(function () {
 	  	this.unblock();
 	  	var command = 'cd '+root+' ; ';
 			command += 'echo "'+sticky.replace('"', '\"')+'" > '+backup_dir+'/sticky.txt; ';
-			command += 'mongoexport --host localhost --port '+mongoPort+' --db meteor --collection events --out '+backup_dir+'/events.json ; ';
-			command += 'mongoexport --host localhost --port '+mongoPort+' --db meteor --collection notes --out '+backup_dir+'/notes.json ; ';
-			command += 'mongoexport --host localhost --port '+mongoPort+' --db meteor --collection lists --out '+backup_dir+'/lists.json ; ';
-			command += 'mongoexport --host localhost --port '+mongoPort+' --db meteor --collection tags --out '+backup_dir+'/tags.json ; ';
-			command += 'mongoexport --host localhost --port '+mongoPort+' --db meteor --collection travels --out '+backup_dir+'/travels.json ; ';
+			command += 'mongoexport --forceTableScan --host localhost --port '+mongoPort+' --db meteor --collection events --out '+backup_dir+'/events.json ; ';
+			command += 'mongoexport --forceTableScan --host localhost --port '+mongoPort+' --db meteor --collection notes --out '+backup_dir+'/notes.json ; ';
+			command += 'mongoexport --forceTableScan --host localhost --port '+mongoPort+' --db meteor --collection lists --out '+backup_dir+'/lists.json ; ';
+			command += 'mongoexport --forceTableScan --host localhost --port '+mongoPort+' --db meteor --collection tags --out '+backup_dir+'/tags.json ; ';
+			command += 'mongoexport --forceTableScan --host localhost --port '+mongoPort+' --db meteor --collection travels --out '+backup_dir+'/travels.json ; ';
 			return serverCommand(command);
 	  },
 
