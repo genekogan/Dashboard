@@ -96,3 +96,23 @@ Meteor.startup(function () {
 
   });
 });
+
+
+
+/*
+
+mongoexport --forceTableScan --host localhost --port 3001 --db meteor --collection events --out events.json
+mongoexport --forceTableScan --host localhost --port 3001 --db meteor --collection notes --out notes.json
+mongoexport --forceTableScan --host localhost --port 3001 --db meteor --collection lists --out lists.json
+mongoexport --forceTableScan --host localhost --port 3001 --db meteor --collection tags --out tags.json
+mongoexport --forceTableScan --host localhost --port 3001 --db meteor --collection travels --out travels.json
+
+mongoimport -h localhost:3001 --db meteor --collection events --drop --type json --file private/backup/events.json ;
+mongoimport -h localhost:3001 --db meteor --collection notes --drop --type json --file private/backup/notes.json ;
+mongoimport -h localhost:3001 --db meteor --collection lists --drop --type json --file private/backup/lists.json ;
+mongoimport -h localhost:3001 --db meteor --collection tags --drop --type json --file private/backup/tags.json ;
+mongoimport -h localhost:3001 --db meteor --collection travels --drop --type json --file private/backup/travels.json ;
+
+*/
+
+
