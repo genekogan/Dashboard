@@ -4,7 +4,7 @@ DIY organizational software: todo list, calendar, and notetaker in one. Work in 
 	cd Dashboard
     meteor create .
     meteor add reactive-dict
-    meteor npm install --save babel-runtime
+    meteor npm install --save babel-runtime # or meteor npm install @babel/runtime@latest
 	npm -g install fibers
     meteor add session
 	cd private/backup
