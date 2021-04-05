@@ -8,7 +8,7 @@ import './body.html';
 
 // constants
 const checkCommitInterval = 1000 * 60 * 30;   // 30 minutes
-const maxBackupLag = 1000 * 60 * 60 * 24;   // 24 hours
+const maxBackupLag = 1000 * 60 * 60 * 12;   // 12 hours
 
 
 this.DataType = {NOTE:0, LIST:1, TAG:2, EVENT:3, TRAVEL:4};

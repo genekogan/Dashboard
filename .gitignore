@@ -1,7 +1,7 @@
-node_modules/
-public/
+.DS_Store
+public/*
 private/backup
-private/backup/*
 .meteor
 .git
 package-lock.json
+node_modules/

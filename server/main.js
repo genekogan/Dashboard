@@ -36,6 +36,7 @@ Meteor.startup(function () {
 	  },
 
 	  exportDb: function (sticky) {
+		  
 	  	this.unblock();
 	  	var command = 'cd '+root+' ; ';
 			command += 'echo "'+sticky.replace('"', '\"')+'" > '+backup_dir+'/sticky.txt; ';
@@ -114,5 +115,4 @@ mongoimport -h localhost:3001 --db meteor --collection tags --drop --type json -
 mongoimport -h localhost:3001 --db meteor --collection travels --drop --type json --file private/backup/travels.json ;
 
 */
-
 

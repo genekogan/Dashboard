@@ -3,6 +3,7 @@ import { Lists, Notes } from '../api/notes.js';
 import './list.html';
 
 
+
 Template.note.events({
   'click .toggle-checked'() {
     Notes.update(this._id, {$set: { checked: ! this.checked }});
@@ -11,18 +12,20 @@ Template.note.events({
   	Notes.update(this._id, {$set: { checked: ! this.checked }});
   },
   'click .down'() {
-    var note_below = Notes.findOne({list_id: this.list_id, order: {$gt: this.order} }, {sort: { order: 1 }});
-    if (note_below === undefined) {return;}
-    var below_order = note_below.order;
-    Notes.update(note_below._id, {$set: { order: this.order },});
-    Notes.update(this._id, {$set: { order: below_order },});
+    Notes.update(this._id, {$set: { order: this.order+1.5 }});
+    idx_order = 0
+    Notes.find({list_id: this.list_id }, {sort: { order: 1 }}).forEach(function(n) {
+      Notes.update(n._id, {$set: { order: idx_order }});
+      idx_order += 1
+    })
   },
   'click .up'() {
-    var note_above = Notes.findOne({list_id: this.list_id, order: {$lt: this.order} }, {sort: { order: -1 }});
-    if (note_above === undefined) {return;}
-    var above_order = note_above.order;
-    Notes.update(note_above._id, {$set: { order: this.order }});
-    Notes.update(this._id, {$set: { order: above_order }});
+    Notes.update(this._id, {$set: { order: this.order-1.5 }});
+    idx_order = 0
+    Notes.find({list_id: this.list_id }, {sort: { order: 1 }}).forEach(function(n) {
+      Notes.update(n._id, {$set: { order: idx_order }});
+      idx_order += 1
+    })
   },
   'mouseenter .text'() {
   	highlighed = this._id;
